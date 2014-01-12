@@ -14,52 +14,52 @@
 
     <div class="page-header">
         <h1>Photo feed
-            <small>Join the Family Photo Feed!</small>
+            <small>For when you're hungry for photos</small>
         </h1>
     </div>
 
     <div class="container">
-    {% if photos %}
-        <div class="row clearfix">
-            <div class="col-md-9 column">
-                <div id="links">
-                    {% for photo in photos %}
-                        <div style="position: relative; display: inline-block;">
-                            <a href="{{ photo.images.standard_resolution.url }}"
-                               title="{{ photo.user.full_name }}" data-description="This is a banana.">
-                                <img src="{{ photo.images.thumbnail.url }}" alt="{{ photo.user.full_name }}">
-                            </a>
-                            <div class="more-info">
-{#                                <a href="{{ photo.link }}" target="_blank">#}
-                                    <div style="float:left">☰ {{ photo.comments.count }}</div>
-{#                                </a>#}
-                                <div style="float:right">♡</div>
-                                <div style="float:right">
-{#                                    <a href="{{ photo.link }}" target="_blank"></a>#}
-                                    {{ photo.likes.count }}
-                                    &nbsp;
-                                </div>
-                                <div style="clear:both"></div>
+        {% if photos %}
+        <div class="col-md-9 column">
+            <div id="links">
+                {% for photo in photos %}
+                    <div style="position: relative; display: inline-block;">
+                        <a href="{{ photo.images.standard_resolution.url }}"
+                           title="{{ photo.user.full_name }}" data-description="This is a banana.">
+                            <img src="{{ photo.images.thumbnail.url }}" alt="{{ photo.user.full_name }}">
+                        </a>
+
+                        <div class="more-info">
+                            {#                                <a href="{{ photo.link }}" target="_blank">#}
+                            <div style="float:left">☰ {{ photo.comments.count }}</div>
+                            {#                                </a>#}
+                            <div style="float:right">♡</div>
+                            <div style="float:right">
+                                {#                                    <a href="{{ photo.link }}" target="_blank"></a>#}
+                                {{ photo.likes.count }}
+                                &nbsp;
                             </div>
+                            <div style="clear:both"></div>
                         </div>
-                    {% endfor %}
-                </div>
+                    </div>
+                {% endfor %}
             </div>
-            <div class="col-md-3 column">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <span class="glyphicon glyphicon-info-sign"></span>
-                        Add your photos!
-                    </div>
-                    <div class="panel-body">
-                        Sign in with your Instagram account to grant us permission to display your most recent Instagram
-                        photos here.
-                        <a href="{{ instagram_auth_url }}" class="btn btn-primary btn-lg btn-padding"
-                           role="button">Connect
-                            With Instagram</a>
-                    </div>
+        </div>
+        {% endif %}
+        <div class="col-md-3 column">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <span class="glyphicon glyphicon-info-sign"></span>
+                    Add your photos!
+                </div>
+                <div class="panel-body">
+                    Sign in with your Instagram account to grant us permission to display your most recent Instagram
+                    photos here.
+                    <a href="{{ instagram_auth_url }}" class="btn btn-primary btn-lg btn-padding"
+                       role="button">Connect
+                        With Instagram</a>
                 </div>
             </div>
         </div>
-    {% endif %}
+    </div>
 {% endblock body %}
