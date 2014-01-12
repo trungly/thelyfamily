@@ -12,4 +12,5 @@ server/lib/*
 .idea
 
 # Configuration files that contain secret keys
-config/*
+# Comment this out only for Google App Engine
+# config/*
