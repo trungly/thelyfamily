@@ -1,0 +1,15 @@
+*.pyc
+# don't include Flask and dependencies
+server/lib/*
+# include README so user doesn't have to create this dir
+!server/lib/README.txt
+.DS_Store
+
+# GAE
+.playground
+
+# IntelliJ/PyCharm
+.idea
+
+# Configuration files that contain secret keys
+config/*

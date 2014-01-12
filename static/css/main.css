@@ -1,0 +1,24 @@
+body {
+	margin-top: 50px;
+	margin-bottom: 50px;
+}
+
+html {
+}
+
+.navbar {
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 18px;
+}
+
+.content {
+    /*padding-top: 50px;*/
+}
+
+.jumbotron-home {
+    margin-top: 40px;
+}
+
+.btn-padding {
+    margin-top: 15px;
+}

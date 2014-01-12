@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js"> <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>The Ly Family</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width">
+
+    <!-- Bootstrap core CSS -->
+    <link href="static/css/bootstrap.css" rel="stylesheet">
+
+    <!-- Custom CSS for the 'Full' Template -->
+    <link href="static/css/main.css" rel="stylesheet">
+
+    <!-- Bootstrap BlueImp Gallery -->
+    <link href="static/css/blueimp-gallery.min.css" rel="stylesheet">
+
+    <!-- Font for the navbar -->
+    <link href='http://fonts.googleapis.com/css?family=Josefin+Sans:400,600,700' rel='stylesheet' type='text/css'>
+</head>
+
+
+<body>
+
+<div class="container">
+    <div class="row clearfix">
+        <div class="col-md-12 column">
+
+            <div class="navbar navbar-fixed-top navbar-default">
+                <div class="container">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse"
+                                data-target=".navbar-collapse">
+                            <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span
+                                class="icon-bar"></span><span class="icon-bar"></span>
+                        </button>
+                        <a href="{{ url_for('home') }}" class="navbar-brand">The Ly Family</a>
+                    </div>
+                    <div class="collapse navbar-collapse" style>
+                        <ul class="nav navbar-nav">
+                            <li class="active">
+                                <a href="{{ url_for('home') }}">Home</a>
+                            </li>
+                            <li>
+                                <a href="{{ url_for('messages') }}">Messages</a>
+                            </li>
+                            <li>
+                                <a href="{{ url_for('members') }}">Member Info</a>
+                            </li>
+                            <li>
+                                <a href="{{ url_for('photos') }}">Photos</a>
+                            </li>
+                            <li>
+                                <a href="{{ url_for('wishlists') }}">Wishlists</a>
+                            </li>
+
+                            {% if user %}
+                                <li class="dropdown pull-right">
+                                    <a href="#" data-toggle="dropdown" class="dropdown-toggle"><span
+                                            class="text-primary">{{ user.nickname() }}</span>
+                                        <strong
+                                                class="caret"></strong></a>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a href="{{ url_for('myprofile') }}">My Profile</a>
+                                        </li>
+                                        <li class="divider">
+                                        </li>
+                                        <li>
+                                            <a href="{{ logout_url }}">Logout</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            {% else %}
+                                <li>
+                                    <a href="{{ login_url }}"><span class="text-primary"><strong>Log in with
+                                        Google!</strong></span></a>
+                                </li>
+
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container content">
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-success"><span class="glyphicon glyphicon-ok"></span> {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                {% block body %}{% endblock body %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript -->
+<script src="static/js/jquery-1.10.2.js"></script>
+<script src="static/js/bootstrap.js"></script>
+
+<script src="static/js/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+
+<script src="static/js/blueimp-gallery.min.js"></script>
+<script>
+    document.getElementById('links').onclick = function (event) {
+        event = event || window.event;
+        var target = event.target || event.srcElement,
+                link = target.src ? target.parentNode : target,
+                options = {index: link, event: event},
+                links = this.getElementsByTagName('a');
+        blueimp.Gallery(links, options);
+    };
+</script>
+
+
+</body>
+
+</html>

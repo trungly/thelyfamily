@@ -1,0 +1,18 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+    <div class="col-lg-6 col-sm-12">
+      <h2>Join the Family Photo Feed!</h2>
+      <p><a href="{{ instagram_auth_url }}">Click here</a> to sign in with Instagram.  Signing in will grant us permission to display your Instagram photos as a part of this feed.</p>
+    </div>
+
+    {% if photos %}
+    <div id="links">
+        {% for photo in photos %}
+        <a href="{{ photo.images.standard_resolution.url }}" title="{{ photo.user.full_name }}">
+            <img src="{{ photo.images.thumbnail.url }}" alt="{{ photo.user.full_name }}">
+        </a>
+        {% endfor %}
+    </div>
+    {% endif %}
+{% endblock body %}

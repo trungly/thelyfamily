@@ -1,0 +1,15 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+    <div class="jumbotron jumbotron-home">
+        <h1>
+            Hello, family!
+        </h1>
+        <p>
+            This is the Ly Family Website. We hope you find it useful and informative.
+        </p>
+        <p>
+            <a class="btn btn-primary btn-large btn-padding" href="{{ url_for('messages') }}">View message board »</a>
+        </p>
+    </div>
+{% endblock body %}

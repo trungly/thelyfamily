@@ -1,0 +1,115 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+    <div class="page-header">
+        <h1>My Profile
+            <small>Update your information below</small>
+        </h1>
+    </div>
+
+    <div class="container">
+        <div class="row clearfix">
+            <div class="col-md-6 column">
+
+                {% from "_formhelpers.html" import render_field %}
+                {% from "_formhelpers.html" import form_field %}
+                <form method="post" action="/myprofile/update" role="form">
+                    {{ form.hidden_tag() }}
+
+                    <div class="row clearfix">
+                        <div class="col-md-6 column">
+                            {{ form_field(form.first_name) }}
+                        </div>
+                        <div class="col-md-6 column">
+                            {{ form_field(form.last_name) }}
+                        </div>
+                    </div>
+
+                    <div class="row clearfix">
+                        <div class="col-md-6 column">
+                            <div class="form-group">
+                                {{ form_field(form.primary_email, type='email') }}
+                            </div>
+                        </div>
+                        <div class="col-md-6 column">
+                            <div class="form-group">
+                                {{ form_field(form.secondary_email, type='email', placeholder='If you have another email address') }}
+                            </div>
+                        </div>
+                    </div>
+
+                    {{ form_field(form.address) }}
+
+                    <div class="row clearfix">
+                        <div class="col-md-4 column">
+                            {{ form_field(form.city) }}
+                        </div>
+                        <div class="col-md-4 column">
+                            {{ form_field(form.state) }}
+                        </div>
+                        <div class="col-md-4 column">
+                            {{ form_field(form.zip) }}
+                        </div>
+                    </div>
+
+                    <div class="row clearfix">
+                        <div class="col-md-4 column">
+                            {{ form_field(form.mobile_phone, placeholder='format: 310-555-1234') }}
+                        </div>
+                        <div class="col-md-4 column">
+                            {{ form_field(form.home_phone) }}
+                        </div>
+                        <div class="col-md-4 column">
+                            {{ form_field(form.work_phone) }}
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-padding">Update Profile</button>
+                </form>
+
+            </div>
+            <div class="col-md-3 column">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <span class="glyphicon glyphicon-info-sign"></span>
+                        Share what you want
+                    </div>
+                    <div class="panel-body">
+                        Share only the information you want to share. But remember that only Ly Family members who have
+                        access to this website can view this information. So I encourage you to fill out <strong><em>all</em></strong> of the information!
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+
+            $('#contact-form').validate({
+                rules: {
+                    name: {
+                        minlength: 2,
+                        required: true
+                    },
+                    email: {
+                        required: true,
+                        email: true
+                    },
+                    message: {
+                        minlength: 2,
+                        required: true
+                    }
+                },
+                highlight: function (element) {
+                    $(element).closest('.control-group').removeClass('success').addClass('error');
+                },
+                success: function (element) {
+                    element.text('OK!').addClass('valid')
+                            .closest('.control-group').removeClass('error').addClass('success');
+                }
+            });
+        });
+    </script>
+
+{% endblock body %}
