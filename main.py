@@ -100,96 +100,84 @@ def messages():
     return 'Message Board'
 
 
-@app.route('/photos')
-@requires_login
-def photos():
+@app.route('/photos/return')
+def photos_return():
     redirect_uri = current_app.config['REDIRECT_URI']
     client_id = current_app.config['CLIENT_ID']
     client_secret = current_app.config['CLIENT_SECRET']
-    instagram_auth_url = current_app.config['INSTAGRAM_AUTH_URL']
 
     code = request.args.get('code', None)
     error = request.args.get('error', None)
 
-    if code:
-        # This is case we are coming back from a successful Instagram Auth call
-        url = 'https://api.instagram.com/oauth/access_token'
-        payload = {
-            'client_id': client_id,
-            'client_secret': client_secret,
-            'grant_type': 'authorization_code',
-            'redirect_uri': redirect_uri,
-            'code': code,
-        }
-        response = requests.post(url, data=payload)
-        result = response.json()
-        print result
-        if 'access_token' in result:
-            # token looks like this: 38721310.2dfd347.ff2c1b40aa704711b2d9b66f869b2e12
-            user = result['user']
-            instagram_user = InstagramUser.query(InstagramUser.id == user['id']).get()
-
-            if not instagram_user:
-                print "No User Found"
-                instagram_user = InstagramUser(
-                    id=user['id'],
-                    access_token=result['access_token'],
-                    username=user['username'],
-                    full_name=user['full_name'],
-                    profile_picture=user['profile_picture'],
-                    website=user['website'],
-                    bio=user['bio'],
-                )
-                instagram_user.put()
-            else:
-                flash('Good news. You have already authenticated with Instagram!', 'info')
-                print "User Found!"
-
-            get_photos_url = (
-                'https://api.instagram.com/v1/users/{user_id}/media/recent'
-                '?access_token={access_token}'
-                .format(
-                    user_id=instagram_user.id,
-                    access_token=instagram_user.access_token,
-                )
-            )
-            # print get_photos_url
-            response = requests.get(get_photos_url)
-            result = response.json()
-
-            return render_template('photos.html', instagram_auth_url=instagram_auth_url, photos=result['data'])
-
-    elif error:
-        # Instagram error - TODO
+    if error:
         print error
+        flash('There was a problem with Instagram auth', 'error')
+        return redirect(url_for('home'))
 
-    else:
-        all_instagram_users = InstagramUser.query().fetch(100)  # max 100 results, just in case
+    # This is case we are coming back from a successful Instagram Auth call
+    url = 'https://api.instagram.com/oauth/access_token'
+    payload = {
+        'client_id': client_id,
+        'client_secret': client_secret,
+        'grant_type': 'authorization_code',
+        'redirect_uri': redirect_uri,
+        'code': code,
+    }
+    response = requests.post(url, data=payload)
+    result = response.json()
 
-        all_photos = []
-        for instagram_user in all_instagram_users:
-            print instagram_user
-            get_photos_url = (
-                'https://api.instagram.com/v1/users/{user_id}/media/recent'
-                '?access_token={access_token}'
-                .format(
-                    user_id=instagram_user.id,
-                    access_token=instagram_user.access_token,
-                )
+    if 'access_token' in result:
+        # token looks like this: 38721310.2dfd347.ff2c1b40aa704711b2d9b66f869b2e12
+        user = result['user']
+        instagram_user = InstagramUser.query(InstagramUser.id == user['id']).get()
+
+        if not instagram_user:
+            # User doesn't exist yet; store them in the database
+            instagram_user = InstagramUser(
+                id=user['id'],
+                access_token=result['access_token'],
+                username=user['username'],
+                full_name=user['full_name'],
+                profile_picture=user['profile_picture'],
+                website=user['website'],
+                bio=user['bio'],
             )
-            # print get_photos_url
-            response = requests.get(get_photos_url)
-            result = response.json()
-            photos = result['data']
-            if photos:
-                all_photos = all_photos + photos
-            else:
-                print 'Why no photos for %s?' % get_photos_url
+            instagram_user.put()
+        else:
+            flash('Good news. You have already authenticated with Instagram!', 'info')
+    else:
+        flash('There was a problem with Instagram auth. No access_token found', 'error')
 
-            return render_template('photos.html', instagram_auth_url=instagram_auth_url, photos=all_photos)
+    return redirect(url_for('photos'))
 
-    return render_template('photos.html', instagram_auth_url=instagram_auth_url)
 
+@app.route('/photos')
+@requires_login
+def photos():
+    instagram_auth_url = current_app.config['INSTAGRAM_AUTH_URL']
+    all_instagram_users = InstagramUser.query().fetch(100)  # max 100 results, just in case
+    all_photos = []
+
+    for instagram_user in all_instagram_users:
+        print instagram_user
+        get_photos_url = (
+            'https://api.instagram.com/v1/users/{user_id}/media/recent'
+            '?access_token={access_token}'
+            .format(
+                user_id=instagram_user.id,
+                access_token=instagram_user.access_token,
+            )
+        )
+        # print get_photos_url
+        response = requests.get(get_photos_url)
+        result = response.json()
+        photos = result['data']
+        if photos:
+            all_photos = all_photos + photos
+        else:
+            print 'Why no photos for %s?' % get_photos_url
+
+    return render_template('photos.html', instagram_auth_url=instagram_auth_url, photos=all_photos)
 
 
 @app.route('/members')
