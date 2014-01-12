@@ -59,10 +59,10 @@
                                 <a href="{{ url_for('wishlists') }}">Wishlists</a>
                             </li>
 
-                            {% if user %}
+                            {% if g.user %}
                                 <li class="dropdown pull-right">
                                     <a href="#" data-toggle="dropdown" class="dropdown-toggle"><span
-                                            class="text-primary">{{ user.nickname() }}</span>
+                                            class="text-primary">{{ g.user.nickname() }}</span>
                                         <strong
                                                 class="caret"></strong></a>
                                     <ul class="dropdown-menu">
@@ -72,16 +72,15 @@
                                         <li class="divider">
                                         </li>
                                         <li>
-                                            <a href="{{ logout_url }}">Logout</a>
+                                            <a href="{{ g.login_or_logout_url }}">Logout</a>
                                         </li>
                                     </ul>
                                 </li>
                             {% else %}
                                 <li>
-                                    <a href="{{ login_url }}"><span class="text-primary"><strong>Log in with
+                                    <a href="{{ g.login_or_logout_url }}"><span class="text-primary"><strong>Log in with
                                         Google!</strong></span></a>
                                 </li>
-
                             {% endif %}
                         </ul>
                     </div>
@@ -89,10 +88,10 @@
             </div>
 
             <div class="container content">
-                {% with messages = get_flashed_messages() %}
+                {% with messages = get_flashed_messages(with_categories=true) %}
                     {% if messages %}
-                        {% for message in messages %}
-                            <div class="alert alert-success"><span class="glyphicon glyphicon-ok"></span> {{ message }}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}"><span class="glyphicon glyphicon-ok"></span> {{ message }}
                             </div>
                         {% endfor %}
                     {% endif %}

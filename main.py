@@ -2,7 +2,8 @@ import os
 import requests
 
 # sys.path includes 'server/lib' due to appengine_config.py
-from flask import Flask, url_for, request, flash, render_template, redirect, current_app
+from functools import wraps
+from flask import Flask, url_for, request, flash, render_template, redirect, current_app, g
 from google.appengine.api import users
 from google.appengine.ext import ndb
 
@@ -18,18 +19,30 @@ if 'localhost' in os.environ.get('SERVER_NAME'):
     app.config.from_object('config.local')
 
 
+@app.before_request
+def add_google_user_to_global():
+    g.user = users.get_current_user()
+    if g.user:
+        g.login_or_logout_url = users.create_logout_url(url_for('home'))
+    else:
+        g.login_or_logout_url = users.create_login_url(url_for('home'))
+
+
+def requires_login(func):
+    @wraps(func)
+    def decorator(*args, **kwargs):
+        user = users.get_current_user()
+        if not user:
+            flash('You will need to log in before you can access this website', 'warning')
+            return redirect(url_for('home'))
+        return func(*args, **kwargs)
+
+    return decorator
+
+
 @app.route('/')
 def home():
-    """ Return home template at application root URL"""
-
-    user = users.get_current_user()
-
-    return render_template(
-        'home.html',
-        user=user,
-        login_url=users.create_login_url(),
-        logout_url=users.create_logout_url(url_for('home'))
-    )
+    return render_template('home.html')
 
 
 @app.route('/secure/info')
@@ -38,12 +51,12 @@ def info():
 
 
 @app.route('/myprofile', methods=['GET'])
+@requires_login
 def myprofile():
-    google_user = users.get_current_user()
-    site_member = SiteMember.get_by_id(str(google_user.user_id()))
+    site_member = SiteMember.get_by_id(str(g.user.user_id()))
     if not site_member:
-        site_member = SiteMember(id=google_user.user_id())
-        site_member.primary_email = google_user.email()
+        site_member = SiteMember(id=g.user.user_id())
+        site_member.primary_email = g.user.email()
 
     form = SiteMemberForm(request.form, site_member)
 
@@ -51,16 +64,16 @@ def myprofile():
 
 
 @app.route('/myprofile/update', methods=['POST'])
+@requires_login
 @ndb.transactional
 def myprofile_update():
-    google_user = users.get_current_user()
     form = SiteMemberForm(request.form)
     if form.validate():
         # try to find the user
-        site_member = SiteMember.get_by_id(str(google_user.user_id()))
+        site_member = SiteMember.get_by_id(str(g.user.user_id()))
         if not site_member:
             # if not found, create a new one based on the google_user id
-            site_member = SiteMember(id=google_user.user_id())
+            site_member = SiteMember(id=g.user.user_id())
 
         site_member.first_name = form.first_name.data
         site_member.last_name = form.last_name.data
@@ -76,17 +89,19 @@ def myprofile_update():
         site_member.birthday = form.birthday.data
 
         site_member.put()
-        flash('Profile updated')
+        flash('Profile updated', 'success')
 
     return redirect(url_for('myprofile'))
 
 
 @app.route('/messages')
+@requires_login
 def messages():
     return 'Message Board'
 
 
 @app.route('/photos')
+@requires_login
 def photos():
     redirect_uri = current_app.config['REDIRECT_URI']
     client_id = current_app.config['CLIENT_ID']
@@ -127,7 +142,7 @@ def photos():
                 )
                 instagram_user.put()
             else:
-                flash("Good news. You've already authenticated with Instagram!")
+                flash('Good news. You have already authenticated with Instagram!', 'info')
                 print "User Found!"
 
             get_photos_url = (
@@ -178,20 +193,18 @@ def photos():
 
 
 @app.route('/members')
+@requires_login
 def members():
     return 'Member Data'
 
 
-@app.route('/logout')
-def logout():
-    return 'logout'
-
-
 @app.route('/social')
+@requires_login
 def social():
     return 'Social Stream'
 
 
 @app.route('/wishlists')
+@requires_login
 def wishlists():
     return 'Wishlists'
