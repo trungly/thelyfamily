@@ -1,6 +1,6 @@
 body {
-	margin-top: 50px;
-	margin-bottom: 50px;
+    margin-top: 50px;
+    margin-bottom: 50px;
 }
 
 html {
@@ -21,4 +21,37 @@ html {
 
 .btn-padding {
     margin-top: 15px;
+}
+
+/* Custom Gallery Styles */
+.blueimp-gallery .modal-body {
+    padding: 0 0 100%;
+}
+
+.blueimp-gallery > .description {
+    position: absolute;
+    top: 30px;
+    left: 15px;
+    color: #fff;
+    display: none;
+}
+
+.blueimp-gallery-controls > .description {
+    display: block;
+}
+
+.more-info {
+    /*display: none;*/
+    cursor: pointer;
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+    background-color: #fff;
+    padding: 7px;
+    font-weight: bold;
+    font-size: 8pt;
+    color: #000;
+    filter: alpha(opacity=70);
+    -moz-opacity: 0.70;
+    opacity: 0.70;
 }

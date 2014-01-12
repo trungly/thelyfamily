@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]> <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]> <html class="no-js lt-ie9"> <![endif]-->
 <!--[if gt IE 8]><!-->
 <html class="no-js"> <!--<![endif]-->
 <head>
@@ -12,16 +12,14 @@
     <meta name="viewport" content="width=device-width">
 
     <!-- Bootstrap core CSS -->
-    <link href="static/css/bootstrap.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://blueimp.github.io/Gallery/css/blueimp-gallery.min.css">
 
-    <!-- Custom CSS for the 'Full' Template -->
-    <link href="static/css/main.css" rel="stylesheet">
-
-    <!-- Bootstrap BlueImp Gallery -->
-    <link href="static/css/blueimp-gallery.min.css" rel="stylesheet">
+    <!-- Main Custom CSS for this site -->
+    <link rel="stylesheet" href="static/css/main.css">
 
     <!-- Font for the navbar -->
-    <link href='http://fonts.googleapis.com/css?family=Josefin+Sans:400,600,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Josefin+Sans:400,600,700" type="text/css">
 </head>
 
 
@@ -56,7 +54,7 @@
                                 <a href="{{ url_for('photos') }}">Photos</a>
                             </li>
                             <li>
-                                <a href="{{ url_for('wishlists') }}">Wishlists</a>
+                                <a href="{{ url_for('wishlists') }}">Wish Lists</a>
                             </li>
 
                             {% if g.user %}
@@ -91,7 +89,8 @@
                 {% with messages = get_flashed_messages(with_categories=true) %}
                     {% if messages %}
                         {% for category, message in messages %}
-                            <div class="alert alert-{{ category }}"><span class="glyphicon glyphicon-ok"></span> {{ message }}
+                            <div class="alert alert-{{ category }}"><span
+                                    class="glyphicon glyphicon-ok"></span> {{ message }}
                             </div>
                         {% endfor %}
                     {% endif %}
@@ -104,12 +103,11 @@
 </div>
 
 <!-- JavaScript -->
-<script src="static/js/jquery-1.10.2.js"></script>
-<script src="static/js/bootstrap.js"></script>
-
 <script src="static/js/modernizr-2.6.2-respond-1.1.0.min.js"></script>
-
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="static/js/bootstrap.js"></script>
 <script src="static/js/blueimp-gallery.min.js"></script>
+
 <script>
     document.getElementById('links').onclick = function (event) {
         event = event || window.event;
