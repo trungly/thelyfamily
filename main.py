@@ -154,7 +154,6 @@ def photos_return():
 @app.route('/photos')
 @requires_login
 def photos():
-    instagram_auth_url = current_app.config['INSTAGRAM_AUTH_URL']
     all_instagram_users = InstagramUser.query().fetch(100)  # max 100 results, just in case
     all_photos = []
 
@@ -171,11 +170,16 @@ def photos():
         # print get_photos_url
         response = requests.get(get_photos_url)
         result = response.json()
-        photos = result['data']
-        if photos:
-            all_photos = all_photos + photos
+        user_photos = result['data']
+        if user_photos:
+            all_photos = all_photos + user_photos
         else:
             print 'Why no photos for %s?' % get_photos_url
+
+    instagram_auth_url = 'https://instagram.com/oauth/authorize/?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code'.format(
+        client_id=current_app.config['CLIENT_ID'],
+        redirect_uri=current_app.config['REDIRECT_URI'],
+    )
 
     return render_template('photos.html', instagram_auth_url=instagram_auth_url, photos=all_photos)
 
