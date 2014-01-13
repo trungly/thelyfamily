@@ -13,7 +13,7 @@ from app.forms import SiteMemberForm
 
 app = Flask(__name__.split('.')[0])
 
-# app.config.from_object('config.production')REDIRECT_URI = 'http://beta.thelyfamily.com/photos/return'
+# app.config.from_object('config.production')
 app.config.update(
     SECRET_KEY='\xe90\xa0K`\xe0\x19\xdezu/\xc6\x81\xc3\xc1\xe3\xe7\xc5\xdbx\xe1\x9a\xebm',
     REDIRECT_URI='http://beta.thelyfamily.com/photos/return',
@@ -32,7 +32,7 @@ def add_google_user_to_global():
     if g.user:
         g.login_or_logout_url = users.create_logout_url(url_for('home'))
     else:
-        g.login_or_logout_url = users.create_login_url(url_for('home'))
+        g.login_or_logout_url = users.create_login_url(url_for('after_login'))
 
 
 def requires_login(func):
@@ -45,6 +45,19 @@ def requires_login(func):
         return func(*args, **kwargs)
 
     return decorator
+
+
+@app.route('/afterlogin')
+def after_login():
+    """ Create a new site user if one doesn't exist for this Google user """
+    user = users.get_current_user()
+    if user:
+        site_member = SiteMember.get_by_id(str(g.user.user_id()))
+        if not site_member:
+            site_member = SiteMember(id=g.user.user_id())
+            site_member.primary_email = g.user.email()
+            site_member.put()
+    return redirect(url_for('home'))
 
 
 @app.route('/')
@@ -61,6 +74,8 @@ def info():
 @requires_login
 def myprofile():
     site_member = SiteMember.get_by_id(str(g.user.user_id()))
+
+    # the site member should exist at this point; but just in case...
     if not site_member:
         site_member = SiteMember(id=g.user.user_id())
         site_member.primary_email = g.user.email()
@@ -194,7 +209,8 @@ def photos():
 @app.route('/members')
 @requires_login
 def members():
-    return 'Member Data'
+    members = SiteMember.query()
+    return render_template('members.html', members=members)
 
 
 @app.route('/social')
