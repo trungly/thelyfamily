@@ -11,6 +11,12 @@ html {
     font-size: 18px;
 }
 
+.navbar-default .navbar-brand {
+    font-family: 'Montez', cursive;
+    font-size: 28px;
+    color: #2387D6;
+}
+
 .content {
     /*padding-top: 50px;*/
 }
