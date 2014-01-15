@@ -65,11 +65,6 @@ def home():
     return render_template('home.html')
 
 
-@app.route('/secure/info')
-def info():
-    return 'Private info'
-
-
 @app.route('/myprofile', methods=['GET'])
 @requires_login
 def myprofile():
@@ -119,7 +114,7 @@ def myprofile_update():
 @app.route('/messages')
 @requires_login
 def messages():
-    return 'Message Board'
+    return render_template('message_board.html')
 
 
 @app.route('/photos/return')

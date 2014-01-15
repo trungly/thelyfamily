@@ -1,9 +1,54 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title></title>
-</head>
-<body>
+{% extends 'layout.html' %}
 
-</body>
-</html>
+{% block body %}
+    <div class="page-header">
+        <h2>Message Board
+            <small>Say something</small>
+        </h2>
+    </div>
+
+    <div class="container">
+        <div class="row clearfix">
+            <div class="col-md-7 column">
+                <div class="row clearfix">
+                    <div class="col-md-2 column">
+                        <img src="http://demoairnet.com/wp-content/uploads/2013/02/MaleBustSilhouette1-90x85.jpeg" alt="Guest"
+                             class="img-circle center-block" height="60" width="60">
+                        <div class="text-center">Trung</div>
+                    </div>
+                    <div class="col-md-10 column">
+                        Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod
+                        tincidunt ut laoreet dolore magna aliquam erat volutpat.
+                    </div>
+                </div>
+                <hr/>
+                <div class="row clearfix">
+                    <div class="col-md-2 column">
+                        <img src="http://demoairnet.com/wp-content/uploads/2013/02/MaleBustSilhouette1-90x85.jpeg" alt="Guest"
+                             class="img-circle center-block" height="60" width="60">
+                        <div class="text-center">Guest</div>
+                    </div>
+                    <div class="col-md-10 column">
+                        Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod
+                        tincidunt ut laoreet dolore magna aliquam erat volutpat.
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-5 column">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <span class="glyphicon glyphicon-comment"></span>
+                        Post a message
+                    </div>
+                    <div class="panel-body">
+                        <form class="form-horizontal" role="form">
+                            <textarea class="form-control" rows="4"></textarea>
+                            <button type="submit" class="btn btn-primary btn-padding pull-right">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock body %}

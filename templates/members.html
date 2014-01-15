@@ -14,8 +14,8 @@
         <th>Secondary Email</th>
         <th>Address</th>
         <th>Mobile Phone</th>
-        <th>Work Phone</th>
         <th>Home Phone</th>
+        <th>Work Phone</th>
         </thead>
         <tbody>
         {% for member in members %}
@@ -27,8 +27,8 @@
                 {{ member.city }}, {{ member.state }} {{ member.zip }}<br>
             </td>
             <td>{{ member.mobile_phone }}</td>
-            <td>{{ member.work_phone }}</td>
             <td>{{ member.home_phone }}</td>
+            <td>{{ member.work_phone }}</td>
         </tr>
         {% endfor %}
         </tbody>
