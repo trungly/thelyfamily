@@ -1,5 +1,6 @@
 import os
 import requests
+import datetime
 
 # sys.path includes 'server/lib' due to appengine_config.py
 from functools import wraps
@@ -7,8 +8,8 @@ from flask import Flask, url_for, request, flash, render_template, redirect, cur
 from google.appengine.api import users
 from google.appengine.ext import ndb
 
-from app.models import SiteMember, InstagramUser
-from app.forms import SiteMemberForm
+from app.models import SiteMember, Message, InstagramUser
+from app.forms import SiteMemberForm, MessageForm
 
 
 app = Flask(__name__.split('.')[0])
@@ -111,10 +112,37 @@ def myprofile_update():
     return redirect(url_for('myprofile'))
 
 
-@app.route('/messages')
+@app.route('/messages', methods=['GET'])
 @requires_login
-def messages():
-    return render_template('message_board.html')
+def message_board():
+    form = MessageForm()
+    ancestor_key = ndb.Key('MessageBoard', 'main')  # ('MessageBoard', 'main') is the parent of all messages
+                                                    # Thus, this puts all messages into a single entity group
+    messages = Message.query(ancestor=ancestor_key).order(-Message.posted_date)
+    return render_template('message_board.html', form=form, messages=messages)
+
+
+@app.route('/message/new', methods=['POST'])
+@requires_login
+def message_new():
+    form = MessageForm(request.form)
+    if form.validate():
+        user_key = ndb.Key(SiteMember, g.user.user_id())
+        ancestor_key = ndb.Key('MessageBoard', 'main')
+        message = Message(parent=ancestor_key, owner=user_key, body=form.body.data, posted_date=datetime.datetime.now())
+        message.put()
+    return redirect(url_for('message_board'))
+
+
+@app.route('/message/<message_id>', methods=['POST'])
+@requires_login
+def message_delete(message_id):
+    message_key = ndb.Key('MessageBoard', 'main', Message, int(message_id))
+    if g.user.user_id() == message_key.get().owner.id():
+        message_key.delete()
+    else:
+        flash('You may only delete your own message', 'error')
+    return redirect(url_for('message_board'))
 
 
 @app.route('/photos/return')
@@ -204,8 +232,8 @@ def photos():
 @app.route('/members')
 @requires_login
 def members():
-    members = SiteMember.query()
-    return render_template('members.html', members=members)
+    m = SiteMember.query().fetch()
+    return render_template('members.html', members=m)
 
 
 @app.route('/social')
@@ -217,4 +245,4 @@ def social():
 @app.route('/wishlists')
 @requires_login
 def wishlists():
-    return 'Wishlists'
+    return render_template('wishlists.html')

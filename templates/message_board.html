@@ -9,30 +9,25 @@
 
     <div class="container">
         <div class="row clearfix">
-            <div class="col-md-7 column">
+            <div class="col-md-7 column" id="messages">
+                {% for message in messages %}
                 <div class="row clearfix">
                     <div class="col-md-2 column">
-                        <img src="http://demoairnet.com/wp-content/uploads/2013/02/MaleBustSilhouette1-90x85.jpeg" alt="Guest"
+                        <img src="http://demoairnet.com/wp-content/uploads/2013/02/MaleBustSilhouette1-90x85.jpeg" title="{{ message.owner.get().first_name }}"
                              class="img-circle center-block" height="60" width="60">
-                        <div class="text-center">Trung</div>
                     </div>
                     <div class="col-md-10 column">
-                        Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod
-                        tincidunt ut laoreet dolore magna aliquam erat volutpat.
+                        <div><strong>{{ message.owner.get().first_name or message.owner.get().primary_email or 'Someone' }} said this <em>{{ message.humanized_posted_date }}</em>:</strong></div>
+                        <div>{{ message.body }}</div>
+                        <div class="pull-right invisible">
+                            <form method="post" action="/message/{{ message.key.id() }}">
+                                <button type="submit" class="btn btn-link">Delete</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
                 <hr/>
-                <div class="row clearfix">
-                    <div class="col-md-2 column">
-                        <img src="http://demoairnet.com/wp-content/uploads/2013/02/MaleBustSilhouette1-90x85.jpeg" alt="Guest"
-                             class="img-circle center-block" height="60" width="60">
-                        <div class="text-center">Guest</div>
-                    </div>
-                    <div class="col-md-10 column">
-                        Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod
-                        tincidunt ut laoreet dolore magna aliquam erat volutpat.
-                    </div>
-                </div>
+                {% endfor %}
             </div>
             <div class="col-md-5 column">
                 <div class="panel panel-default">
@@ -41,8 +36,9 @@
                         Post a message
                     </div>
                     <div class="panel-body">
-                        <form class="form-horizontal" role="form">
-                            <textarea class="form-control" rows="4"></textarea>
+                        <form class="form-horizontal" method="post" action="/message/new" role="form">
+                            {{ form.hidden_tag() }}
+                            <textarea class="form-control" name="body" rows="4"></textarea>
                             <button type="submit" class="btn btn-primary btn-padding pull-right">Submit</button>
                         </form>
                     </div>

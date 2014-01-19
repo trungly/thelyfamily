@@ -45,8 +45,8 @@
                             <li{% if request.endpoint == 'home' %} class="active"{% endif %}>
                                 <a href="{{ url_for('home') }}">Home</a>
                             </li>
-                            <li{% if request.endpoint == 'messages' %} class="active"{% endif %}>
-                                <a href="{{ url_for('messages') }}">Messages</a>
+                            <li{% if request.endpoint == 'message_board' %} class="active"{% endif %}>
+                                <a href="{{ url_for('message_board') }}">Messages</a>
                             </li>
                             <li{% if request.endpoint == 'members' %} class="active"{% endif %}>
                                 <a href="{{ url_for('members') }}">Member Info</a>
@@ -108,18 +108,7 @@
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 <script src="static/js/bootstrap.js"></script>
 <script src="static/js/blueimp-gallery.min.js"></script>
-
-<script>
-    document.getElementById('links').onclick = function (event) {
-        event = event || window.event;
-        var target = event.target || event.srcElement,
-                link = target.src ? target.parentNode : target,
-                options = {index: link, event: event},
-                links = this.getElementsByTagName('a');
-        blueimp.Gallery(links, options);
-    };
-</script>
-
+<script src="static/js/app.js"></script>
 
 </body>
 
