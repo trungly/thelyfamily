@@ -1,11 +1,13 @@
 import os
 import requests
 import datetime
+import cgi
 
 # sys.path includes 'server/lib' due to appengine_config.py
 from functools import wraps
 from flask import Flask, url_for, request, flash, render_template, redirect, current_app, g
 from google.appengine.api import users
+from google.appengine.ext import blobstore
 from google.appengine.ext import ndb
 
 from app.models import SiteMember, Message, InstagramUser
@@ -78,12 +80,13 @@ def myprofile():
 
     form = SiteMemberForm(request.form, site_member)
 
-    return render_template('myprofile.html', form=form)
+    photo_upload_url = blobstore.create_upload_url(url_for('myprofile_photo'))
+
+    return render_template('myprofile.html', form=form, photo_upload_url=photo_upload_url, photo_serving_url=site_member.photo_url(size=220))
 
 
 @app.route('/myprofile/update', methods=['POST'])
 @requires_login
-@ndb.transactional
 def myprofile_update():
     form = SiteMemberForm(request.form)
     if form.validate():
@@ -109,6 +112,17 @@ def myprofile_update():
         site_member.put()
         flash('Profile updated', 'success')
 
+    return redirect(url_for('myprofile'))
+
+
+@app.route('/myprofile/photo', methods=['POST'])
+@requires_login
+def myprofile_photo():
+    _, params = cgi.parse_header(request.files['profile_photo'].headers['Content-Type'])
+    photo_key = blobstore.BlobKey(params['blob-key'])
+    site_member = SiteMember.get_by_id(str(g.user.user_id()))
+    site_member.photo_key = photo_key
+    site_member.put()
     return redirect(url_for('myprofile'))
 
 

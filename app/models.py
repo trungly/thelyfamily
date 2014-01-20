@@ -1,4 +1,5 @@
 from google.appengine.ext import ndb
+from google.appengine.api import images
 from app.utils import pretty_date
 
 
@@ -17,6 +18,15 @@ class SiteMember(ndb.Model):
     home_phone = ndb.StringProperty()
     work_phone = ndb.StringProperty()
     birthday = ndb.DateProperty()
+    photo_key = ndb.BlobKeyProperty()
+
+    def photo_url(self, size=None):
+        if not self.photo_key:
+            return None
+        url = images.get_serving_url(str(self.photo_key))
+        if size:
+            return '{url}=s{size}'.format(url=url, size=size)
+        return url
 
 
 class Message(ndb.Model):

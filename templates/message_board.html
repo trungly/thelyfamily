@@ -13,7 +13,7 @@
                 {% for message in messages %}
                 <div class="row clearfix">
                     <div class="col-md-2 column">
-                        <img src="http://demoairnet.com/wp-content/uploads/2013/02/MaleBustSilhouette1-90x85.jpeg" title="{{ message.owner.get().first_name }}"
+                        <img src="{{ message.owner.get().photo_url(size=60) or '/static/images/male_bust.jpg' }}" title="{{ message.owner.get().first_name }}"
                              class="img-circle center-block" height="60" width="60">
                     </div>
                     <div class="col-md-10 column">

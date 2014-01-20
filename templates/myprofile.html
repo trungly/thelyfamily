@@ -9,9 +9,55 @@
 
     <div class="container">
         <div class="row clearfix">
-            <div class="col-md-6 column">
-
-                {% from "_formhelpers.html" import render_field %}
+            <div class="col-md-3 column">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <span class="glyphicon glyphicon-user"></span>
+                        Click to change profile picture
+                    </div>
+                    <div class="panel-body">
+                        <a href="#" data-toggle="modal" data-target="#myModal">
+                            <img src="{{ photo_serving_url or '/static/images/male_bust.jpg' }}" class="center-block">
+                        </a>
+                        <!-- Modal -->
+                        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+                             aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <form action="{{ photo_upload_url }}" enctype="multipart/form-data" method="post">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal"
+                                                    aria-hidden="true">&times;</button>
+                                            <h4 class="modal-title" id="myModalLabel">Upload a profile picture</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="alert alert-warning"><strong>Warning!</strong> Clicking the <strong>Upload</strong> button will reload the entire page.
+                                            If you have unsaved changes on the main page, press <strong>Cancel</strong> and save your profile before
+                                            uploading a photo.</div>
+                                            <input class="form-control input-file" id="profile_photo" name="profile_photo" type="file">
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                            <button type="submit" class="btn btn-primary">Upload</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <span class="glyphicon glyphicon-info-sign"></span>
+                        Share only what you want
+                    </div>
+                    <div class="panel-body">
+                        Share only the information you want to share. But remember that only Ly Family members who have
+                        access to this website can view this information. So I encourage you to fill out <strong><em>all</em></strong> of the information!
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-7 column">
                 {% from "_formhelpers.html" import form_field %}
                 <form method="post" action="/myprofile/update" role="form">
                     {{ form.hidden_tag() }}
@@ -66,19 +112,6 @@
 
                     <button type="submit" class="btn btn-primary btn-padding">Update Profile</button>
                 </form>
-
-            </div>
-            <div class="col-md-3 column">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <span class="glyphicon glyphicon-info-sign"></span>
-                        Share what you want
-                    </div>
-                    <div class="panel-body">
-                        Share only the information you want to share. But remember that only Ly Family members who have
-                        access to this website can view this information. So I encourage you to fill out <strong><em>all</em></strong> of the information!
-                    </div>
-                </div>
             </div>
         </div>
     </div>
