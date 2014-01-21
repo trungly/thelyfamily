@@ -16,6 +16,7 @@
         <th>Mobile Phone</th>
         <th>Home Phone</th>
         <th>Work Phone</th>
+        <th>Birthday</th>
         </thead>
         <tbody>
         {% for member in members %}
@@ -29,6 +30,7 @@
             <td>{{ member.mobile_phone }}</td>
             <td>{{ member.home_phone }}</td>
             <td>{{ member.work_phone }}</td>
+            <td>{{ member.birthday.strftime('%m/%d/%Y') if member.birthday else '' }}</td>
         </tr>
         {% endfor %}
         </tbody>
