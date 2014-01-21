@@ -1,12 +1,17 @@
 {% macro form_field(field) -%}
+    {% set label = kwargs.pop('label', '') %}
+    {% if not label %}
+        {% set label = field.label.text|safe %}
+    {% endif %}
+
     {% set placeholder = kwargs.pop('placeholder', '') %}
     {% if not placeholder %}
-        {% set placeholder = field.label.text %}
+        {% set placeholder = label %}
     {% endif %}
 
     <div class="form-group {% if field.errors %}error{% endif %}">
         <label for="{{ field.id }}">
-            {{ field.label.text }}{% if field.flags.required %} *{% endif %}:
+            {{ label }}{% if field.flags.required %} *{% endif %}:
         </label>
         {% set class_ = kwargs.pop('class_', '') %}
         {% set class_ = class_ + ' form-control' %}
@@ -16,7 +21,7 @@
         {% if field.type == 'BooleanField' %}
             <label class="checkbox">
                 {{ field(class_=class_, **kwargs) }}
-                {{ field.label.text|safe }}
+                {{ label }}
             </label>
         {% else %}
             {% if field.type in ('TextField', 'TextAreaField', 'PasswordField') %}
