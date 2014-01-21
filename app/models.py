@@ -6,7 +6,7 @@ from app.utils import pretty_date
 class SiteMember(ndb.Model):
     """ Represents a thelyfamily.com member """
 
-    first_name = ndb.StringProperty()
+    first_name = ndb.StringProperty(required=True)
     last_name = ndb.StringProperty()
     primary_email = ndb.StringProperty()
     secondary_email = ndb.StringProperty()

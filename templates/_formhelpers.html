@@ -9,7 +9,7 @@
         {% set placeholder = label %}
     {% endif %}
 
-    <div class="form-group {% if field.errors %}error{% endif %}">
+    <div class="form-group {% if field.errors %}has-error{% endif %}">
         <label for="{{ field.id }}">
             {{ label }}{% if field.flags.required %} *{% endif %}:
         </label>
@@ -32,7 +32,7 @@
             {{ field(class_=class_, placeholder=placeholder, **kwargs) }}
         {% endif %}
         {% if field.errors %}
-            <span class="error help-inline">{{ field.errors|join(', ') }}</span>
+            <span class="help-block">{{ field.errors|join(', ') }}</span>
         {% endif %}
         {% if field.description %}
             <p class="help-block">{{ field.description|safe }}</p>

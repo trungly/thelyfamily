@@ -16,13 +16,7 @@ from app.forms import SiteMemberForm, MessageForm
 
 app = Flask(__name__.split('.')[0])
 
-# app.config.from_object('config.production')
-app.config.update(
-    SECRET_KEY='\xe90\xa0K`\xe0\x19\xdezu/\xc6\x81\xc3\xc1\xe3\xe7\xc5\xdbx\xe1\x9a\xebm',
-    REDIRECT_URI='http://beta.thelyfamily.com/photos/return',
-    CLIENT_ID='9bd63a0b912c4e7f8c8e979276e1cff5',
-    CLIENT_SECRET='9fe9f63f65644d2a8fa68740e70f9a9a',
-)
+app.config.from_object('config.production')
 
 settings = os.environ.get('APP_SETTINGS')
 if 'localhost' in os.environ.get('SERVER_NAME'):
@@ -89,13 +83,8 @@ def myprofile():
 @requires_login
 def myprofile_update():
     form = SiteMemberForm(request.form)
+    site_member = SiteMember.get_by_id(str(g.user.user_id()))
     if form.validate():
-        # try to find the user
-        site_member = SiteMember.get_by_id(str(g.user.user_id()))
-        if not site_member:
-            # if not found, create a new one based on the google_user id
-            site_member = SiteMember(id=g.user.user_id())
-
         site_member.first_name = form.first_name.data
         site_member.last_name = form.last_name.data
         site_member.primary_email = form.primary_email.data
@@ -111,6 +100,10 @@ def myprofile_update():
 
         site_member.put()
         flash('Profile updated', 'success')
+    else:
+        flash('There was an error saving your profile', 'danger')
+        photo_upload_url = blobstore.create_upload_url(url_for('myprofile_photo'))
+        return render_template('myprofile.html', form=form, photo_upload_url=photo_upload_url, photo_serving_url=site_member.photo_url(size=220))
 
     return redirect(url_for('myprofile'))
 
@@ -155,7 +148,7 @@ def message_delete(message_id):
     if g.user.user_id() == message_key.get().owner.id():
         message_key.delete()
     else:
-        flash('You may only delete your own message', 'error')
+        flash('You may only delete your own message', 'danger')
     return redirect(url_for('message_board'))
 
 
@@ -170,7 +163,7 @@ def photos_return():
 
     if error:
         print error
-        flash('There was a problem with Instagram auth', 'error')
+        flash('There was a problem with Instagram auth', 'danger')
         return redirect(url_for('home'))
 
     # This is case we are coming back from a successful Instagram Auth call
@@ -205,7 +198,7 @@ def photos_return():
         else:
             flash('Good news. You have already authenticated with Instagram!', 'info')
     else:
-        flash('There was a problem with Instagram auth. No access_token found', 'error')
+        flash('There was a problem with Instagram auth. No access_token found', 'danger')
 
     return redirect(url_for('photos'))
 
