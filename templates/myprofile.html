@@ -72,14 +72,19 @@
                     </div>
 
                     <div class="row clearfix">
-                        <div class="col-md-6 column">
+                        <div class="col-md-4 column">
                             <div class="form-group">
                                 {{ form_field(form.primary_email, type='email') }}
                             </div>
                         </div>
-                        <div class="col-md-6 column">
+                        <div class="col-md-4 column">
                             <div class="form-group">
                                 {{ form_field(form.secondary_email, type='email', placeholder='If you have another email address') }}
+                            </div>
+                        </div>
+                        <div class="col-md-4 column">
+                            <div class="form-group">
+                                {{ form_field(form.birthdate, type='date', placeholder='Birthdate') }}
                             </div>
                         </div>
                     </div>
