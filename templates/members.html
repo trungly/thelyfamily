@@ -17,6 +17,7 @@
         <th>Home Phone</th>
         <th>Work Phone</th>
         <th>Birthday</th>
+        <th>Age</th>
         </thead>
         <tbody>
         {% for member in members %}
@@ -31,6 +32,7 @@
             <td>{{ member.home_phone }}</td>
             <td>{{ member.work_phone }}</td>
             <td>{{ member.birthday.strftime('%m/%d/%Y') if member.birthday else '' }}</td>
+            <td>{{ int((date.today() - member.birthday).days/365.2425) }}</td>
         </tr>
         {% endfor %}
         </tbody>
