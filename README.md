@@ -22,7 +22,7 @@ The technologies in use are:
 	
 3. Go to your top-level projects folder (where you want this to live) and type:
 
-    git clone git@github.com:trungly/thelyfamily.git
+    git clone https://github.com/trungly/thelyfamily.git
     
     cd thelyfamily
 	
