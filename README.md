@@ -24,6 +24,15 @@ git clone https://github.com/trungly/thelyfamily.git
 cd thelyfamily
 ```	
 
+3.5.  In MacOS 10.9.1, you would need to edit the bashrc file to include the correct path to virtualenvwrapper in order to go to step 4. Add the following to your bashrc file (mine's located in /etc/).  Please change the location of virtualenvwrapper to the location on your computer.  
+
+nano ~/.bashrc
+export WORKON_HOME=$HOME/.virtualenvs
+source  /Library/Frameworks/Python.framework/Versions/2.7/bin/virtualenvwrapper$
+
+After appending to bashrc, reload with:
+source ~/.bashrc
+
 4. Create your virtual environment here
 ```
 mkvirtualenv thelyfamily
