@@ -5,13 +5,13 @@ import cgi
 
 # sys.path includes 'server/lib' due to appengine_config.py
 from functools import wraps
-from flask import Flask, url_for, request, flash, render_template, redirect, current_app, g
-from google.appengine.api import users
+from flask import Flask, url_for, request, flash, render_template, redirect, current_app, g, session
+from werkzeug.exceptions import BadRequest, Unauthorized
 from google.appengine.ext import blobstore
 from google.appengine.ext import ndb
 
-from app.models import SiteMember, Message, InstagramUser
-from app.forms import SiteMemberForm, MessageForm
+from app.models import Message, InstagramUser, Member
+from app.forms import MessageForm, MemberProfileForm
 
 
 app = Flask(__name__.split('.')[0])
@@ -24,99 +24,108 @@ if 'localhost' in os.environ.get('SERVER_NAME'):
 
 
 @app.before_request
-def add_google_user_to_global():
-    g.user = users.get_current_user()
-    if g.user:
-        g.login_or_logout_url = users.create_logout_url(url_for('home'))
-    else:
-        g.login_or_logout_url = users.create_login_url(url_for('after_login'))
+def add_member_to_global():
+    if 'member_id' in session:
+        member_key = ndb.Key(Member, session['member_id'])
+        g.member = member_key.get()  # get() looks up member from database
 
 
 def requires_login(func):
     @wraps(func)
     def decorator(*args, **kwargs):
-        user = users.get_current_user()
-        if not user:
+        if hasattr(g, 'member') and g.member:
+            return func(*args, **kwargs)
+        else:
             flash('You will need to log in before you can access this website', 'warning')
             return redirect(url_for('home'))
-        return func(*args, **kwargs)
 
     return decorator
 
 
-@app.route('/afterlogin')
-def after_login():
-    """ Create a new site user if one doesn't exist for this Google user """
-    user = users.get_current_user()
-    if user:
-        site_member = SiteMember.get_by_id(str(g.user.user_id()))
-        if not site_member:
-            site_member = SiteMember(id=g.user.user_id())
-            site_member.primary_email = g.user.email()
-            site_member.put()
+@app.route('/login', methods=['POST'])
+def login():
+    """ Ajax only. This supports logging in via first_name and password """
+    if not request.is_xhr:
+        return BadRequest()
+
+    member = Member.query(
+        Member.first_name_lowercase == request.form['first_name'].lower()
+    ).get()
+
+    if member and member.check_password(request.form['password']):
+        session['member_id'] = member.key.id()
+        return '', 200
+
+    return Unauthorized()
+
+
+@app.route('/logout', methods=['GET'])
+def logout():
+    session.pop('member_id')
     return redirect(url_for('home'))
 
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def home():
     return render_template('home.html')
 
 
-@app.route('/myprofile', methods=['GET'])
+@app.route('/profile', methods=['GET'])
 @requires_login
-def myprofile():
-    site_member = SiteMember.get_by_id(str(g.user.user_id()))
+def profile():
+    form = MemberProfileForm(request.form, g.member.profile)
+    form.member_id.data = g.member.key.id()
+    form.first_name.data = g.member.first_name
+    form.last_name.data = g.member.last_name
+    photo_upload_url = blobstore.create_upload_url(url_for('profile_photo'))
+    profile_photo_url = g.member.profile.photo_url
 
-    # the site member should exist at this point; but just in case...
-    if not site_member:
-        site_member = SiteMember(id=g.user.user_id())
-        site_member.primary_email = g.user.email()
-
-    form = SiteMemberForm(request.form, site_member)
-
-    photo_upload_url = blobstore.create_upload_url(url_for('myprofile_photo'))
-
-    return render_template('myprofile.html', form=form, photo_upload_url=photo_upload_url, photo_serving_url=site_member.photo_url(size=220))
+    return render_template('profile.html', form=form, photo_upload_url=photo_upload_url, profile_photo_url=profile_photo_url)
 
 
-@app.route('/myprofile/update', methods=['POST'])
+@app.route('/profile', methods=['POST'])
 @requires_login
-def myprofile_update():
-    form = SiteMemberForm(request.form)
-    site_member = SiteMember.get_by_id(str(g.user.user_id()))
-    if form.validate():
-        site_member.first_name = form.first_name.data
-        site_member.last_name = form.last_name.data
-        site_member.primary_email = form.primary_email.data
-        site_member.secondary_email = form.secondary_email.data
-        site_member.address = form.address.data
-        site_member.city = form.city.data
-        site_member.state = form.state.data
-        site_member.zip = form.zip.data
-        site_member.mobile_phone = form.mobile_phone.data
-        site_member.home_phone = form.home_phone.data
-        site_member.work_phone = form.work_phone.data
-        site_member.birthday = form.birthday.data
+def profile_update():
+    form = MemberProfileForm(request.form)
 
-        site_member.put()
-        flash('Profile updated', 'success')
-    else:
-        flash('There was an error saving your profile', 'danger')
-        photo_upload_url = blobstore.create_upload_url(url_for('myprofile_photo'))
-        return render_template('myprofile.html', form=form, photo_upload_url=photo_upload_url, photo_serving_url=site_member.photo_url(size=220))
+    # ensure members can only update their own profiles
+    if str(form.member_id.data) != str(g.member.key.id()):
+        return Unauthorized()
 
-    return redirect(url_for('myprofile'))
+    if not form.validate():
+        return render_template('profile.html', form=form)
+
+    profile = g.member.profile_key.get()
+
+    # update member and profile based on form values
+    g.member.first_name = form.first_name.data
+    g.member.last_name = form.last_name.data
+    profile.primary_email = form.primary_email.data
+    profile.secondary_email = form.secondary_email.data
+    profile.address = form.address.data
+    profile.city = form.city.data
+    profile.state = form.state.data
+    profile.zip = form.zip.data
+    profile.mobile_phone = form.mobile_phone.data
+    profile.home_phone = form.home_phone.data
+    profile.work_phone = form.work_phone.data
+    profile.birthday = form.birthday.data
+
+    profile.put()
+    g.member.put()
+    flash('Profile updated', 'success')
+
+    return redirect(url_for('profile'))
 
 
-@app.route('/myprofile/photo', methods=['POST'])
+@app.route('/profile/photo', methods=['POST'])
 @requires_login
-def myprofile_photo():
+def profile_photo():
     _, params = cgi.parse_header(request.files['profile_photo'].headers['Content-Type'])
-    photo_key = blobstore.BlobKey(params['blob-key'])
-    site_member = SiteMember.get_by_id(str(g.user.user_id()))
-    site_member.photo_key = photo_key
-    site_member.put()
-    return redirect(url_for('myprofile'))
+    profile = g.member.profile_key.get()
+    profile.photo_key = blobstore.BlobKey(params['blob-key'])
+    profile.put()
+    return redirect(url_for('profile'))
 
 
 @app.route('/messages', methods=['GET'])
@@ -134,9 +143,8 @@ def message_board():
 def message_new():
     form = MessageForm(request.form)
     if form.validate():
-        user_key = ndb.Key(SiteMember, g.user.user_id())
         ancestor_key = ndb.Key('MessageBoard', 'main')
-        message = Message(parent=ancestor_key, owner=user_key, body=form.body.data, posted_date=datetime.datetime.now())
+        message = Message(parent=ancestor_key, owner_key=g.member.key, body=form.body.data, posted_date=datetime.datetime.now())
         message.put()
     return redirect(url_for('message_board'))
 
@@ -144,11 +152,14 @@ def message_new():
 @app.route('/message/<message_id>', methods=['POST'])
 @requires_login
 def message_delete(message_id):
-    message_key = ndb.Key('MessageBoard', 'main', Message, int(message_id))
-    if g.user.user_id() == message_key.get().owner.id():
-        message_key.delete()
-    else:
+    ancestor_key = ndb.Key('MessageBoard', 'main')
+    message = Message.get_by_id(int(message_id), parent=ancestor_key)
+    if not message:
+        flash('Message not found', 'danger')
+    elif message.owner != g.member:
         flash('You may only delete your own message', 'danger')
+    else:
+        message.key.delete()
     return redirect(url_for('message_board'))
 
 
@@ -239,8 +250,8 @@ def photos():
 @app.route('/members')
 @requires_login
 def members():
-    m = SiteMember.query().fetch()
-    return render_template('members.html', members=m)
+    members = Member.query().fetch()
+    return render_template('members.html', members=members)
 
 
 @app.route('/social')

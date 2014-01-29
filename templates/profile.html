@@ -16,11 +16,11 @@
                         Click to change profile picture
                     </div>
                     <div class="panel-body">
-                        <a href="#" data-toggle="modal" data-target="#myModal">
-                            <img src="{{ photo_serving_url or '/static/images/male_bust.jpg' }}" class="center-block">
+                        <a href="#" data-toggle="modal" data-target="#photo-upload-modal">
+                            <img src="{{ profile_photo_url or '/static/images/male_bust.jpg' }}" class="center-block">
                         </a>
-                        <!-- Modal -->
-                        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+                        <!-- Photo Upload Modal -->
+                        <div class="modal fade" id="photo-upload-modal" tabindex="-1" role="dialog" aria-labelledby="photo-upload-modal-label"
                              aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
@@ -28,7 +28,7 @@
                                         <div class="modal-header">
                                             <button type="button" class="close" data-dismiss="modal"
                                                     aria-hidden="true">&times;</button>
-                                            <h4 class="modal-title" id="myModalLabel">Upload a profile picture</h4>
+                                            <h4 class="modal-title" id="photo-upload-modal-label">Upload a profile picture</h4>
                                         </div>
                                         <div class="modal-body">
                                             <div class="alert alert-warning"><strong>Warning!</strong> Clicking the <strong>Upload</strong> button will reload the entire page.
@@ -56,15 +56,21 @@
                         access to this website can view this information. So I encourage you to fill out <strong><em>all</em></strong> of the information!
                     </div>
                 </div>
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <strong>Note: </strong>The First Name field is disabled because currently this is used as your user login id.
+                    </div>
+                </div>
             </div>
             <div class="col-md-7 column">
                 {% from "_formhelpers.html" import form_field %}
-                <form method="post" action="/myprofile/update" role="form">
+                <form id="update-profile-form" method="post" action="/profile" role="form">
                     {{ form.hidden_tag() }}
+                    <input type="hidden" id="{{ form.member_id.short_name }}" name="{{ form.member_id.short_name }}" value="{{ form.member_id.data }}"/>
 
                     <div class="row clearfix">
                         <div class="col-md-6 column">
-                            {{ form_field(form.first_name) }}
+                            {{ form_field(form.first_name, disabled=True) }}
                         </div>
                         <div class="col-md-6 column">
                             {{ form_field(form.last_name) }}
@@ -79,7 +85,7 @@
                         </div>
                         <div class="col-md-4 column">
                             <div class="form-group">
-                                {{ form_field(form.secondary_email, type='email', placeholder='If you have another email address') }}
+                                {{ form_field(form.secondary_email, type='email', placeholder='If you have another email') }}
                             </div>
                         </div>
                         <div class="col-md-4 column">
@@ -115,7 +121,7 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-primary btn-padding">Update Profile</button>
+                    <button id="update-profile-button" type="button" class="btn btn-primary btn-padding">Update Profile</button>
                 </form>
             </div>
         </div>

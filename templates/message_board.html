@@ -13,11 +13,16 @@
                 {% for message in messages %}
                 <div class="row clearfix">
                     <div class="col-md-2 column">
-                        <img src="{{ message.owner.get().photo_url(size=60) or '/static/images/male_bust.jpg' }}" title="{{ message.owner.get().first_name }}"
+                        {% if message.owner.profile.photo_url %}
+                            {% set image_source = '%s=s60' % message.owner.profile.photo_url %}
+                        {% else %}
+                            {% set image_source = '/static/images/male_bust.jpg' %}
+                        {% endif %}
+                        <img src="{{ image_source }}" title="{{ message.owner.first_name }}"
                              class="img-circle center-block" height="60" width="60">
                     </div>
                     <div class="col-md-10 column">
-                        <div><strong>{{ message.owner.get().first_name or message.owner.get().primary_email or 'Someone' }} said this <em>{{ message.humanized_posted_date }}</em>:</strong></div>
+                        <div><strong>{{ message.owner.first_name or message.owner.profile.primary_email or 'Someone' }} said this <em>{{ message.humanized_posted_date }}</em>:</strong></div>
                         <div>{{ message.body }}</div>
                         <div class="pull-right invisible">
                             <form method="post" action="/message/{{ message.key.id() }}">

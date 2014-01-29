@@ -19,4 +19,26 @@ $(function() {
             $(this).children().eq(1).children().eq(2).addClass("invisible");
         }
     );
+
+    // submit login via Ajax
+    $("#login-form").submit(function(event) {
+        event.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: "/login",
+            data: $(this).serialize(),
+            success: function() {
+                window.location = '/';
+            },
+            error: function() {
+                $("#login-error").removeClass("hidden")
+            }
+        });
+    });
+
+    // member login form: workaround for 'disabled' input (First Name) not being submitted
+    $("#update-profile-button").click(function(event) {
+        $("#first_name").removeAttr("disabled")
+        $("#update-profile-form").submit();
+    })
 });

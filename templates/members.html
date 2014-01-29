@@ -22,15 +22,15 @@
         {% for member in members %}
         <tr>
             <td>{{ member.first_name }} {{ member.last_name }}</td>
-            <td>{{ member.primary_email }}</td>
-            <td>{{ member.secondary_email }}</td>
-            <td>{{ member.address }}<br>
-                {{ member.city }}, {{ member.state }} {{ member.zip }}<br>
+            <td>{{ member.profile.primary_email }}</td>
+            <td>{{ member.profile.secondary_email }}</td>
+            <td>{{ member.profile.address }}<br>
+                {{ member.profile.city }}, {{ member.profile.state }} {{ member.profile.zip }}<br>
             </td>
-            <td>{{ member.mobile_phone }}</td>
-            <td>{{ member.home_phone }}</td>
-            <td>{{ member.work_phone }}</td>
-            <td>{{ member.birthday.strftime('%m/%d/%Y') if member.birthday else '' }}</td>
+            <td>{{ member.profile.mobile_phone }}</td>
+            <td>{{ member.profile.home_phone }}</td>
+            <td>{{ member.profile.work_phone }}</td>
+            <td>{{ member.profile.birthday.strftime('%m/%d/%Y') if member.profile.birthday else '' }}</td>
         </tr>
         {% endfor %}
         </tbody>
