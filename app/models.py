@@ -12,17 +12,24 @@ class Member(ndb.Model):
     last_name = ndb.StringProperty(required=True)
     hashed_password = ndb.StringProperty(required=True)
 
-    google_user_id = ndb.StringProperty()
-    facebook_user_id = ndb.StringProperty()
-    instagram_user_id = ndb.StringProperty()
     profile_key = ndb.KeyProperty(kind='Profile')
+    google_user_key = ndb.KeyProperty(kind='GoogleUser')
+    facebook_user_key = ndb.KeyProperty(kind='FacebookUser')
+    instagram_user_key = ndb.KeyProperty(kind='InstagramUser')
 
     @property
     def profile(self):
         if self.profile_key:
             return self.profile_key.get()
         else:
-            Profile.create_for_member(self)
+            return Profile.create_for_member(self)
+
+    @property
+    def instagram_user(self):
+        if self.instagram_user_key:
+            return self.instagram_user_key.get()
+        else:
+            return InstagramUser.create_for_member(self)
 
     def set_password(self, password):
         self.hashed_password = generate_password_hash(password)
@@ -80,15 +87,27 @@ class Message(ndb.Model):
 class InstagramUser(ndb.Model):
     """ Represents an Instagram user including their current access_token """
 
-    id = ndb.StringProperty()  # 38721310
+    userid = ndb.StringProperty()  # 38721310
+    member_key = ndb.KeyProperty(kind=Member)
     access_token = ndb.StringProperty()  # 38721310.2dfd347.ff2c1b40aa704711b2d9b66f869b2e12
     # last_access_date = ndb.DateTimeProperty(auto_now_add=True)
     username = ndb.StringProperty()  # trungly
-    full_name = ndb.StringProperty()  # Trung  Ly
+    full_name = ndb.StringProperty()  # Trung Ly
     profile_picture = ndb.StringProperty()  # http://images.ak.instagram.com/profiles/profile_38721310_75sq_1340060663.jpg
     website = ndb.StringProperty()  # http://blog.thelyfamily.com
     bio = ndb.StringProperty()  # Husband, dad, web developer enjoying the good life in Santa Monica, CA.
+    recent_photos_url = ndb.ComputedProperty(
+        lambda self: 'https://api.instagram.com/v1/users/{user_id}/media/recent?access_token={access_token}'
+        .format(
+            user_id=self.userid,
+            access_token=self.access_token,
+        )
+    )
 
     @classmethod
-    def from_id(cls, id=id):
-        return cls.query(id=id)
+    def create_for_member(cls, member):
+        new_instagram_user = InstagramUser(member_key=member.key)
+        new_instagram_user.put()
+        member.instagram_user_key = new_instagram_user.key
+        member.put()
+        return new_instagram_user

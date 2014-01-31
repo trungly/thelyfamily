@@ -53,11 +53,14 @@
                     Add your photos!
                 </div>
                 <div class="panel-body">
-                    Sign in with your Instagram account to grant us permission to display your most recent Instagram
-                    photos here.
-                    <a href="{{ instagram_auth_url }}" class="btn btn-primary btn-lg btn-padding"
-                       role="button">Connect
-                        With Instagram</a>
+                    {% if g.member.instagram_user_key %}
+                        Already connected with Instagram.  <a href="{{ url_for('instagram_disconnect') }}">Disconnect</a> or <a href="{{ config['INSTAGRAM_AUTH_URL'] }}">reconnect</a>.
+                    {% else %}
+                        Sign in with your Instagram account to grant us permission to display your most recent Instagram
+                        photos here.
+                        <a href="{{ config['INSTAGRAM_AUTH_URL'] }}" class="btn btn-primary btn-lg btn-padding"
+                           role="button">Connect With Instagram</a>
+                    {% endif %}
                 </div>
             </div>
         </div>

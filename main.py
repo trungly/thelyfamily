@@ -16,11 +16,17 @@ from app.forms import MessageForm, MemberProfileForm
 
 app = Flask(__name__.split('.')[0])
 
+# TODO: move this configuration stuff to its own module
 app.config.from_object('config.production')
 
 settings = os.environ.get('APP_SETTINGS')
 if 'localhost' in os.environ.get('SERVER_NAME'):
     app.config.from_object('config.local')
+
+app.config['INSTAGRAM_AUTH_URL'] = 'https://instagram.com/oauth/authorize/?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code'.format(
+    client_id=app.config['CLIENT_ID'],
+    redirect_uri=app.config['REDIRECT_URI'],
+)
 
 
 @app.before_request
@@ -44,7 +50,8 @@ def requires_login(func):
 
 @app.route('/login', methods=['POST'])
 def login():
-    """ Ajax only. This supports logging in via first_name and password """
+    """ Ajax only. This supports logging in via first_name and password
+    """
     if not request.is_xhr:
         return BadRequest()
 
@@ -163,8 +170,24 @@ def message_delete(message_id):
     return redirect(url_for('message_board'))
 
 
+@app.route('/photos')
+@requires_login
+def photos():
+    all_photos = []
+    for instagram_user in InstagramUser.query().fetch():
+        response = requests.get(instagram_user.recent_photos_url)
+        if response.ok:
+            current_user_photos = response.json().get('data', None)
+            if current_user_photos:
+                all_photos = all_photos + current_user_photos
+
+    return render_template('photos.html', photos=all_photos)
+
+
 @app.route('/photos/return')
-def photos_return():
+def instagram_return():
+    """ handle return from Instagram Authentication
+    """
     redirect_uri = current_app.config['REDIRECT_URI']
     client_id = current_app.config['CLIENT_ID']
     client_secret = current_app.config['CLIENT_SECRET']
@@ -173,31 +196,25 @@ def photos_return():
     error = request.args.get('error', None)
 
     if error:
-        print error
-        flash('There was a problem with Instagram auth', 'danger')
-        return redirect(url_for('home'))
+        flash('There was a problem with Instagram authentication.', 'danger')
+    else:
+        # This is case we are coming back from a successful Instagram Auth call
+        url = 'https://api.instagram.com/oauth/access_token'
+        payload = {
+            'client_id': client_id,
+            'client_secret': client_secret,
+            'grant_type': 'authorization_code',
+            'redirect_uri': redirect_uri,
+            'code': code,
+        }
+        response = requests.post(url, data=payload)
+        result = response.json()
+        user = result.get('user', None)
 
-    # This is case we are coming back from a successful Instagram Auth call
-    url = 'https://api.instagram.com/oauth/access_token'
-    payload = {
-        'client_id': client_id,
-        'client_secret': client_secret,
-        'grant_type': 'authorization_code',
-        'redirect_uri': redirect_uri,
-        'code': code,
-    }
-    response = requests.post(url, data=payload)
-    result = response.json()
-
-    if 'access_token' in result:
-        # token looks like this: 38721310.2dfd347.ff2c1b40aa704711b2d9b66f869b2e12
-        user = result['user']
-        instagram_user = InstagramUser.query(InstagramUser.id == user['id']).get()
-
-        if not instagram_user:
-            # User doesn't exist yet; store them in the database
-            instagram_user = InstagramUser(
-                id=user['id'],
+        if user:
+            instagram_user = g.member.instagram_user
+            instagram_user.populate(
+                userid=user['id'],
                 access_token=result['access_token'],
                 username=user['username'],
                 full_name=user['full_name'],
@@ -207,44 +224,17 @@ def photos_return():
             )
             instagram_user.put()
         else:
-            flash('Good news. You have already authenticated with Instagram!', 'info')
-    else:
-        flash('There was a problem with Instagram auth. No access_token found', 'danger')
+            flash('There was a problem with Instagram authentication. No user object found.', 'danger')
 
     return redirect(url_for('photos'))
 
 
-@app.route('/photos')
-@requires_login
-def photos():
-    all_instagram_users = InstagramUser.query().fetch(100)  # max 100 results, just in case
-    all_photos = []
-
-    for instagram_user in all_instagram_users:
-        print instagram_user
-        get_photos_url = (
-            'https://api.instagram.com/v1/users/{user_id}/media/recent'
-            '?access_token={access_token}'
-            .format(
-                user_id=instagram_user.id,
-                access_token=instagram_user.access_token,
-            )
-        )
-        # print get_photos_url
-        response = requests.get(get_photos_url)
-        result = response.json()
-        user_photos = result['data']
-        if user_photos:
-            all_photos = all_photos + user_photos
-        else:
-            print 'Why no photos for %s?' % get_photos_url
-
-    instagram_auth_url = 'https://instagram.com/oauth/authorize/?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code'.format(
-        client_id=current_app.config['CLIENT_ID'],
-        redirect_uri=current_app.config['REDIRECT_URI'],
-    )
-
-    return render_template('photos.html', instagram_auth_url=instagram_auth_url, photos=all_photos)
+@app.route('/instagram/disconnect')
+def instagram_disconnect():
+    g.member.instagram_user.key.delete()
+    g.member.instagram_user_key = None
+    g.member.put()
+    return redirect(url_for('photos'))
 
 
 @app.route('/members')
