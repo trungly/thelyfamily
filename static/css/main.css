@@ -17,6 +17,10 @@ html {
     color: #2387D6;
 }
 
+.sub-nav {
+    padding-bottom: 25px;
+}
+
 .content {
     /*padding-top: 50px;*/
 }

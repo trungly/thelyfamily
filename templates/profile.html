@@ -63,68 +63,141 @@
                 </div>
             </div>
             <div class="col-md-7 column">
-                {% from "_formhelpers.html" import form_field %}
-                <form id="update-profile-form" method="post" action="/profile" role="form">
-                    {{ form.hidden_tag() }}
-                    <input type="hidden" id="{{ form.member_id.short_name }}" name="{{ form.member_id.short_name }}" value="{{ form.member_id.data }}"/>
+                <div class="row sub-nav"> <!-- Sub nav -->
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a href="#basic" data-toggle="tab">Basic Profile</a></li>
+                        <li><a href="#change-password" data-toggle="tab">Change Password</a></li>
+                        <li><a href="#connect-accounts" data-toggle="tab">Connect Accounts</a></li>
+                    </ul>
+                </div>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="basic">
+                        {% from "_formhelpers.html" import form_field %}
+                        <form id="update-profile-form" method="post" action="/profile" role="form">
+                            {{ form.hidden_tag() }}
+                            <input type="hidden" id="{{ form.member_id.short_name }}" name="{{ form.member_id.short_name }}" value="{{ form.member_id.data }}"/>
 
-                    <div class="row clearfix">
-                        <div class="col-md-6 column">
-                            {{ form_field(form.first_name, disabled=True) }}
-                        </div>
-                        <div class="col-md-6 column">
-                            {{ form_field(form.last_name) }}
-                        </div>
+                            <div class="row clearfix">
+                                <div class="col-md-6 column">
+                                    {{ form_field(form.first_name, disabled=True) }}
+                                </div>
+                                <div class="col-md-6 column">
+                                    {{ form_field(form.last_name) }}
+                                </div>
+                            </div>
+
+                            <div class="row clearfix">
+                                <div class="col-md-4 column">
+                                    <div class="form-group">
+                                        {{ form_field(form.primary_email, type='email') }}
+                                    </div>
+                                </div>
+                                <div class="col-md-4 column">
+                                    <div class="form-group">
+                                        {{ form_field(form.secondary_email, type='email', placeholder='If you have another email') }}
+                                    </div>
+                                </div>
+                                <div class="col-md-4 column">
+                                    <div class="form-group">
+                                        {{ form_field(form.birthday, type='date', label='Birth Date') }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{ form_field(form.address) }}
+
+                            <div class="row clearfix">
+                                <div class="col-md-4 column">
+                                    {{ form_field(form.city) }}
+                                </div>
+                                <div class="col-md-4 column">
+                                    {{ form_field(form.state) }}
+                                </div>
+                                <div class="col-md-4 column">
+                                    {{ form_field(form.zip) }}
+                                </div>
+                            </div>
+
+                            <div class="row clearfix">
+                                <div class="col-md-4 column">
+                                    {{ form_field(form.mobile_phone, placeholder='format: 310-555-1234') }}
+                                </div>
+                                <div class="col-md-4 column">
+                                    {{ form_field(form.home_phone) }}
+                                </div>
+                                <div class="col-md-4 column">
+                                    {{ form_field(form.work_phone) }}
+                                </div>
+                            </div>
+
+                            <button id="update-profile-button" type="button" class="btn btn-primary btn-padding">Update Profile</button>
+                        </form>
                     </div>
-
-                    <div class="row clearfix">
-                        <div class="col-md-4 column">
-                            <div class="form-group">
-                                {{ form_field(form.primary_email, type='email') }}
+                    <div class="tab-pane" id="change-password">
+                        <div class="row clearfix">
+                            <div class="col-md-6 column">
+                                <div id="success-message" class="alert alert-success hidden">
+                                    Your password has been updated!
+                                </div>
+                                <form id="change-password-form" method="post" role="form">
+                                    {{ password_form.hidden_tag() }}
+                                    {{ form_field(password_form.old_password) }}
+                                    {{ form_field(password_form.new_password) }}
+                                    {{ form_field(password_form.confirm_password) }}
+                                    <button id="change-password-button" type="submit" class="btn btn-primary btn-padding">Change Password</button>
+                                </form>
                             </div>
                         </div>
-                        <div class="col-md-4 column">
-                            <div class="form-group">
-                                {{ form_field(form.secondary_email, type='email', placeholder='If you have another email') }}
-                            </div>
-                        </div>
-                        <div class="col-md-4 column">
-                            <div class="form-group">
-                                {{ form_field(form.birthday, type='date', label='Birth Date') }}
-                            </div>
-                        </div>
                     </div>
-
-                    {{ form_field(form.address) }}
-
-                    <div class="row clearfix">
-                        <div class="col-md-4 column">
-                            {{ form_field(form.city) }}
-                        </div>
-                        <div class="col-md-4 column">
-                            {{ form_field(form.state) }}
-                        </div>
-                        <div class="col-md-4 column">
-                            {{ form_field(form.zip) }}
-                        </div>
+                    <div class="tab-pane" id="connect-accounts">
+                        Under Construction
                     </div>
-
-                    <div class="row clearfix">
-                        <div class="col-md-4 column">
-                            {{ form_field(form.mobile_phone, placeholder='format: 310-555-1234') }}
-                        </div>
-                        <div class="col-md-4 column">
-                            {{ form_field(form.home_phone) }}
-                        </div>
-                        <div class="col-md-4 column">
-                            {{ form_field(form.work_phone) }}
-                        </div>
-                    </div>
-
-                    <button id="update-profile-button" type="button" class="btn btn-primary btn-padding">Update Profile</button>
-                </form>
+                </div>
             </div>
         </div>
     </div>
 
 {% endblock body %}
+
+
+{% block javascript %}
+
+    // update profile form: workaround for 'disabled' input (First Name) not being submitted
+    $("#update-profile-button").click(function(event) {
+        $("#first_name").removeAttr("disabled")
+        $("#update-profile-form").submit();
+    })
+
+    $("#change-password-form").submit(function(event) {
+        event.preventDefault();
+        if ($("#confirm-password").val() !== $("#new-password").val()) {
+            alert("The new passwords much match");
+            return false;
+        }
+        $.ajax({
+            type: "POST",
+            url: "/password/change",
+            data: $(this).serialize(),
+            success: function() {
+                $(".alert-danger").remove();
+                $("#success-message").removeClass("hidden");
+            },
+            error: function(response) {
+                $(".alert-danger").remove();
+                $("#success-message").addClass("hidden");
+                if (response.status == 401) {
+                    error_html = "<span class='alert-danger'>Invalid password.</span>"
+                    $("#old_password").after(error_html);
+                }
+                $.each(response.responseJSON, function(field, field_errors) {
+                    $.each(field_errors, function(index, field_error) {
+                        error_html = "<span class='alert-danger'>" + field_error + "</span>"
+                        $("#" + field).after(error_html);
+                    });
+                });
+            }
+        });
+    });
+
+
+{% endblock javascript %}

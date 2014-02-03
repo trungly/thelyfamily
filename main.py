@@ -5,13 +5,13 @@ import cgi
 
 # sys.path includes 'server/lib' due to appengine_config.py
 from functools import wraps
-from flask import Flask, url_for, request, flash, render_template, redirect, current_app, g, session
+from flask import Flask, url_for, request, flash, render_template, redirect, current_app, g, session, jsonify
 from werkzeug.exceptions import BadRequest, Unauthorized
 from google.appengine.ext import blobstore
 from google.appengine.ext import ndb
 
 from app.models import Message, InstagramUser, Member
-from app.forms import MessageForm, MemberProfileForm
+from app.forms import MessageForm, MemberProfileForm, ChangePasswordForm
 
 
 app = Flask(__name__.split('.')[0])
@@ -66,6 +66,25 @@ def login():
     return Unauthorized()
 
 
+@app.route('/password/change', methods=['POST'])
+@requires_login
+def change_password():
+    if not request.is_xhr:
+        return BadRequest()
+
+    password_form = ChangePasswordForm(request.form)
+    if not password_form.validate():
+        r = jsonify(password_form.errors)
+        return r, 400
+
+    if not g.member.check_password(password_form.old_password.data):
+        return '', 401
+
+    g.member.set_password(request.form['new_password'])
+    g.member.put()
+    return '', 200
+
+
 @app.route('/logout', methods=['GET'])
 def logout():
     session.pop('member_id')
@@ -86,8 +105,9 @@ def profile():
     form.last_name.data = g.member.last_name
     photo_upload_url = blobstore.create_upload_url(url_for('profile_photo'))
     profile_photo_url = g.member.profile.photo_url
+    password_form = ChangePasswordForm()
 
-    return render_template('profile.html', form=form, photo_upload_url=photo_upload_url, profile_photo_url=profile_photo_url)
+    return render_template('profile.html', form=form, password_form=password_form, photo_upload_url=photo_upload_url, profile_photo_url=profile_photo_url)
 
 
 @app.route('/profile', methods=['POST'])
