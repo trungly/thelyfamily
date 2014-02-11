@@ -24,19 +24,19 @@
             <div id="links">
                 {% for photo in photos %}
                     <div style="position: relative; display: inline-block;">
-                        <a href="{{ photo.images.standard_resolution.url }}"
-                           title="{{ photo.user.full_name }}" data-description="This is a banana.">
-                            <img src="{{ photo.images.thumbnail.url }}" alt="{{ photo.user.full_name }}">
+                        <a href="{{ photo.source }}"
+                           title="{{ photo.full_name }}" data-description="This is a banana.">
+                            <img src="{{ photo.thumbnail }}" alt="{{ photo.full_name }}">
                         </a>
 
                         <div class="more-info">
                             {#                                <a href="{{ photo.link }}" target="_blank">#}
-                            <div style="float:left">☰ {{ photo.comments.count }}</div>
+                            <div style="float:left">☰ {{ photo.comments_count }}</div>
                             {#                                </a>#}
                             <div style="float:right">♡</div>
                             <div style="float:right">
                                 {#                                    <a href="{{ photo.link }}" target="_blank"></a>#}
-                                {{ photo.likes.count }}
+                                {{ photo.likes_count }}
                                 &nbsp;
                             </div>
                             <div style="clear:both"></div>

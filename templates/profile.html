@@ -150,7 +150,21 @@
                         </div>
                     </div>
                     <div class="tab-pane" id="connect-accounts">
-                        Under Construction
+                        <table class="table">
+                            <tr>
+                                <td class="text-right">Google</td>
+                                <td><button type="button" class="btn btn-primary btn-padding">Google</button></td>
+                            </tr>
+                            <tr>
+                                <td class="text-right">Facebook</td>
+                                <td><a href="{{ config['FACEBOOK_AUTH_URL'] }}" class="btn btn-primary btn-lg btn-padding"
+                           role="button">Connect With Facebook</a></td>
+                            </tr>
+                            <tr>
+                                <td class="text-right">Instagram</td>
+                                <td><button type="button" class="btn btn-primary btn-padding">Instagram</button></td>
+                            </tr>
+                        </table>
                     </div>
                 </div>
             </div>

@@ -1,7 +1,10 @@
+import datetime
+
 from google.appengine.ext import ndb
 from google.appengine.api import images
 from app.utils import pretty_date
 from werkzeug.security import generate_password_hash, check_password_hash
+from app.facebook import Facebook
 
 
 class Member(ndb.Model):
@@ -30,6 +33,13 @@ class Member(ndb.Model):
             return self.instagram_user_key.get()
         else:
             return InstagramUser.create_for_member(self)
+
+    @property
+    def facebook_user(self):
+        if self.facebook_user_key:
+            return self.facebook_user_key.get()
+        else:
+            return FacebookUser.create_for_member(self)
 
     def set_password(self, password):
         self.hashed_password = generate_password_hash(password)
@@ -111,3 +121,59 @@ class InstagramUser(ndb.Model):
         member.instagram_user_key = new_instagram_user.key
         member.put()
         return new_instagram_user
+
+
+class FacebookUser(ndb.Model):
+    """ Represents a Facebook user
+    """
+    member_key = ndb.KeyProperty(kind=Member)
+    userid = ndb.IntegerProperty()
+    access_token = ndb.StringProperty()
+    expires_at = ndb.DateTimeProperty()
+    scopes = ndb.JsonProperty()
+    recent_photos_url = ndb.ComputedProperty(Facebook.uploaded_photos_url)
+
+    @classmethod
+    def create_for_member(cls, member):
+        new_facebook_user = FacebookUser(member_key=member.key)
+        new_facebook_user.put()
+        member.facebook_user_key = new_facebook_user.key
+        member.put()
+        return new_facebook_user
+
+
+class Photo(ndb.Model):
+    link = ndb.StringProperty()
+    created_time = ndb.DateTimeProperty()
+    thumbnail = ndb.StringProperty()
+    source = ndb.StringProperty()
+    likes_count = ndb.IntegerProperty()
+    comments_count = ndb.IntegerProperty()
+    caption = ndb.StringProperty()
+    user_name = ndb.StringProperty()
+
+    @classmethod
+    def from_instagram_photo(cls, photo):
+        return cls(
+            link=photo['link'],
+            created_time=datetime.datetime.fromtimestamp(int(photo['created_time'])),
+            thumbnail=photo['images']['thumbnail']['url'],
+            source=photo['images']['standard_resolution']['url'],
+            likes_count=photo['likes']['count'],
+            comments_count=photo['comments']['count'],
+            caption=photo['caption']['text'] if photo['caption'] else None,
+            user_name=photo['user']['full_name'],
+        )
+
+    @classmethod
+    def from_facebook_photo(cls, photo):
+        return cls(
+            link=photo['link'],
+            created_time=datetime.datetime.strptime(photo['created_time'], "%Y-%m-%dT%H:%M:%S+0000"),
+            thumbnail=photo['picture'],
+            source=photo['source'],
+            likes_count=len(photo.get('likes', {'data': []})['data']),
+            comments_count=len(photo.get('comments', {'data': []})['data']),
+            caption=getattr(photo, 'name', None),
+            user_name=photo['from']['name'],
+        )

@@ -10,8 +10,9 @@ from werkzeug.exceptions import BadRequest, Unauthorized
 from google.appengine.ext import blobstore
 from google.appengine.ext import ndb
 
-from app.models import Message, InstagramUser, Member
+from app.models import Member, Message, InstagramUser, FacebookUser, Photo
 from app.forms import MessageForm, MemberProfileForm, ChangePasswordForm
+from app.facebook import Facebook
 
 
 app = Flask(__name__.split('.')[0])
@@ -27,6 +28,9 @@ app.config['INSTAGRAM_AUTH_URL'] = 'https://instagram.com/oauth/authorize/?clien
     client_id=app.config['CLIENT_ID'],
     redirect_uri=app.config['REDIRECT_URI'],
 )
+
+app.config['FACEBOOK_AUTH_URL'] = Facebook.auth_url()
+app.config['FACEBOOK_APP_TOKEN'] = '254341781341297'
 
 
 @app.before_request
@@ -194,14 +198,23 @@ def message_delete(message_id):
 @requires_login
 def photos():
     all_photos = []
-    for instagram_user in InstagramUser.query().fetch():
-        response = requests.get(instagram_user.recent_photos_url)
+    for user in (InstagramUser.query().fetch()):
+        response = requests.get(user.recent_photos_url)
         if response.ok:
             current_user_photos = response.json().get('data', None)
+            current_user_photos = [Photo.from_instagram_photo(p) for p in current_user_photos]
             if current_user_photos:
                 all_photos = all_photos + current_user_photos
 
-    return render_template('photos.html', photos=all_photos)
+    for user in (FacebookUser.query().fetch()):
+        response = requests.get(user.recent_photos_url)
+        if response.ok:
+            current_user_photos = response.json().get('data', None)
+            current_user_photos = [Photo.from_facebook_photo(p) for p in current_user_photos]
+            if current_user_photos:
+                all_photos = all_photos + current_user_photos
+
+    return render_template('photos.html', photos=sorted(all_photos, key=lambda x: x.created_time, reverse=True))
 
 
 @app.route('/photos/return')
@@ -251,10 +264,52 @@ def instagram_return():
 
 @app.route('/instagram/disconnect')
 def instagram_disconnect():
-    g.member.instagram_user.key.delete()
+    if g.member.instagram_user:
+        g.member.instagram_user.key.delete()
     g.member.instagram_user_key = None
     g.member.put()
     return redirect(url_for('photos'))
+
+
+@app.route('/facebook/disconnect')
+def facebook_disconnect():
+    if g.member.facebook_user:
+        g.member.facebook_user.key.delete()
+    g.member.facebook_user_key = None
+    g.member.put()
+    return redirect(url_for('profile'))
+
+
+@app.route('/facebook/return')
+def facebook_return():
+    code = request.args.get('code', None)
+    if code:
+        url = Facebook.access_token_url(code)
+        response = requests.get(url)
+        if response.ok:
+            access_token = response.content.split('&')[0].split('=')[1]
+            url = Facebook.debug_token_url(access_token)
+
+            response = requests.get(url)
+            if response.ok:
+                data = response.json()['data']
+                facebook_user = g.member.facebook_user
+                facebook_user.populate(
+                    userid=data['user_id'],
+                    access_token=access_token,
+                    expires_at=datetime.datetime.fromtimestamp(data['expires_at']),
+                    scopes=data['scopes'],
+                )
+                facebook_user.put()
+            else:
+                flash('There was a problem with verifying access_token: ' + response.json()['error']['message'], 'danger')
+        else:
+            flash('There was a problem with retrieving access_token: ' + response.content, 'danger')
+    else:
+        flash('There was a problem with Facebook authentication: No code.', 'danger')
+
+    flash('Successfully connected your account!', 'success')
+    return redirect('%s#connect-accounts' % url_for('profile'))
 
 
 @app.route('/members')
