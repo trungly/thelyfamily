@@ -64,7 +64,7 @@
             </div>
             <div class="col-md-7 column">
                 <div class="row sub-nav"> <!-- Sub nav -->
-                    <ul class="nav nav-tabs">
+                    <ul class="nav nav-tabs" id="tabs">
                         <li class="active"><a href="#basic" data-toggle="tab">Basic Profile</a></li>
                         <li><a href="#change-password" data-toggle="tab">Change Password</a></li>
                         <li><a href="#connect-accounts" data-toggle="tab">Connect Accounts</a></li>
@@ -152,17 +152,16 @@
                     <div class="tab-pane" id="connect-accounts">
                         <table class="table">
                             <tr>
-                                <td class="text-right">Google</td>
-                                <td><button type="button" class="btn btn-primary btn-padding">Google</button></td>
+                                <th><label for="facebook_toggle">Facebook</label></th>
+                                <td><input type="checkbox" id="facebook_toggle"/></td>
                             </tr>
                             <tr>
-                                <td class="text-right">Facebook</td>
-                                <td><a href="{{ config['FACEBOOK_AUTH_URL'] }}" class="btn btn-primary btn-lg btn-padding"
-                           role="button">Connect With Facebook</a></td>
+                                <th><label for="instagram_toggle">Instagram</label></th>
+                                <td><input type="checkbox" id="instagram_toggle"/></td>
                             </tr>
                             <tr>
-                                <td class="text-right">Instagram</td>
-                                <td><button type="button" class="btn btn-primary btn-padding">Instagram</button></td>
+                                <th><label for="google_toggle">Google</label></th>
+                                <td><input type="checkbox" id="google_toggle" disabled="disabled"/></td>
                             </tr>
                         </table>
                     </div>
@@ -175,43 +174,96 @@
 
 
 {% block javascript %}
+<script src="static/js/iphone-style-checkboxes.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    $(function() {
 
-    // update profile form: workaround for 'disabled' input (First Name) not being submitted
-    $("#update-profile-button").click(function(event) {
-        $("#first_name").removeAttr("disabled")
-        $("#update-profile-form").submit();
-    })
-
-    $("#change-password-form").submit(function(event) {
-        event.preventDefault();
-        if ($("#confirm-password").val() !== $("#new-password").val()) {
-            alert("The new passwords much match");
-            return false;
+        // preselect a tab based on url fragment
+        var tab_name = window.location.hash.substr(1);
+        if (tab_name) {
+            $("#tabs a[href='#" + tab_name + "']").tab('show');
         }
-        $.ajax({
-            type: "POST",
-            url: "/password/change",
-            data: $(this).serialize(),
-            success: function() {
-                $(".alert-danger").remove();
-                $("#success-message").removeClass("hidden");
-            },
-            error: function(response) {
-                $(".alert-danger").remove();
-                $("#success-message").addClass("hidden");
-                if (response.status == 401) {
-                    error_html = "<span class='alert-danger'>Invalid password.</span>"
-                    $("#old_password").after(error_html);
+
+        // initialize iphone style checkboxes
+        {% if g.member.facebook_user_key %}
+            $("#facebook_toggle:checkbox").prop('checked', true);
+        {% endif %}
+        $("#facebook_toggle:checkbox").iphoneStyle({
+            resizeContainer: false,
+            resizeHandle: false,
+            onChange: function(element, checked) {
+                if (checked) {
+                    window.location = "{{ config['FACEBOOK_AUTH_URL']|safe }}";
+                } else {
+                    window.location = "{{ url_for('facebook_disconnect') }}";
                 }
-                $.each(response.responseJSON, function(field, field_errors) {
-                    $.each(field_errors, function(index, field_error) {
-                        error_html = "<span class='alert-danger'>" + field_error + "</span>"
-                        $("#" + field).after(error_html);
-                    });
-                });
             }
         });
+
+        {% if g.member.instagram_user_key %}
+            $("#instagram_toggle:checkbox").prop('checked', true);
+        {% endif %}
+        $("#instagram_toggle:checkbox").iphoneStyle({
+            resizeContainer: false,
+            resizeHandle: false,
+            onChange: function(element, checked) {
+                if (checked) {
+                    window.location = "{{ config['INSTAGRAM_AUTH_URL'] }}";
+                } else {
+                    window.location = "{{ url_for('instagram_disconnect') }}";
+                }
+            }
+        });
+
+        {% if g.member.google_user_key %}
+            $("#google_toggle:checkbox").prop('checked', true);
+        {% endif %}
+        $("#google_toggle:checkbox").iphoneStyle({
+            resizeContainer: false,
+            resizeHandle: false,
+            onChange: function(element, checked) {
+                alert("This is not ready yet");
+            }
+        });
+
+        // update profile form: workaround for 'disabled' input (First Name) not being submitted
+        $("#update-profile-button").click(function(event) {
+            $("#first_name").removeAttr("disabled")
+            $("#update-profile-form").submit();
+        })
+
+        // submit change password form
+        $("#change-password-form").submit(function(event) {
+            event.preventDefault();
+            if ($("#confirm-password").val() !== $("#new-password").val()) {
+                alert("The new passwords much match");
+                return false;
+            }
+            $.ajax({
+                type: "POST",
+                url: "/password/change",
+                data: $(this).serialize(),
+                success: function() {
+                    $(".alert-danger").remove();
+                    $("#success-message").removeClass("hidden");
+                },
+                error: function(response) {
+                    $(".alert-danger").remove();
+                    $("#success-message").addClass("hidden");
+                    if (response.status == 401) {
+                        error_html = "<span class='alert-danger'>Invalid password.</span>"
+                        $("#old_password").after(error_html);
+                    }
+                    $.each(response.responseJSON, function(field, field_errors) {
+                        $.each(field_errors, function(index, field_error) {
+                            error_html = "<span class='alert-danger'>" + field_error + "</span>"
+                            $("#" + field).after(error_html);
+                        });
+                    });
+                }
+            });
+        });
+
     });
-
-
+</script>
 {% endblock javascript %}

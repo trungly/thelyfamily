@@ -264,20 +264,22 @@ def instagram_return():
 
 @app.route('/instagram/disconnect')
 def instagram_disconnect():
-    if g.member.instagram_user:
-        g.member.instagram_user.key.delete()
-    g.member.instagram_user_key = None
-    g.member.put()
-    return redirect(url_for('photos'))
+    if g.member.instagram_user_key:
+        g.member.instagram_user_key.delete()
+        g.member.instagram_user_key = None
+        g.member.put()
+        flash('Successfully disconnected your Instagram account', 'success')
+    return redirect(url_for('profile', _anchor="connect-accounts"))
 
 
 @app.route('/facebook/disconnect')
 def facebook_disconnect():
-    if g.member.facebook_user:
-        g.member.facebook_user.key.delete()
-    g.member.facebook_user_key = None
-    g.member.put()
-    return redirect(url_for('profile'))
+    if g.member.facebook_user_key:
+        g.member.facebook_user_key.delete()
+        g.member.facebook_user_key = None
+        g.member.put()
+        flash('Successfully disconnected your Facebook account', 'success')
+    return redirect(url_for('profile', _anchor="connect-accounts"))
 
 
 @app.route('/facebook/return')

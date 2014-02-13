@@ -65,3 +65,11 @@ html {
     -moz-opacity: 0.70;
     opacity: 0.70;
 }
+
+.iPhoneCheckContainer {
+    width: 97px;
+}
+
+.iPhoneCheckHandle {
+    width: 47px;
+}

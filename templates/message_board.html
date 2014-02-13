@@ -56,13 +56,19 @@
 
 
 {% block javascript %}
-    // show/hide Delete link on messages
-    $("#messages").children().hover(
-        function() {
-            $(this).children().eq(1).children().eq(2).removeClass("invisible");
-        },
-        function() {
-            $(this).children().eq(1).children().eq(2).addClass("invisible");
-        }
-    );
+<script>
+    $(function() {
+
+        // show/hide Delete link on messages
+        $("#messages").children().hover(
+            function() {
+                $(this).children().eq(1).children().eq(2).removeClass("invisible");
+            },
+            function() {
+                $(this).children().eq(1).children().eq(2).addClass("invisible");
+            }
+        );
+
+    });
+</script>
 {% endblock javascript %}
