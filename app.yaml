@@ -28,10 +28,14 @@ handlers:
 - url: .*  # This regex directs all routes to main.app
   script: main.app
 
-# Enable interactive admin console
-- url: /admin/.*
-  script: $PYTHON_LIB/google/appengine/ext/admin
-  login: admin
+# Enable interactive admin console -- Didn't work; couldn't deploy app
+#- url: /admin/.*
+#  script: ${PYTHON_LIB/}google/appengine/ext/admin
+#  login: admin
+
+# Enable remote shell access. Run this: remote_api_shell.py the-ly-family
+builtins:
+- remote_api: on
 
 # Third party libraries that are included in the App Engine SDK must be listed
 # here if you want to use them.  See
