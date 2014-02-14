@@ -48,8 +48,8 @@
                             <li{% if request.endpoint == 'home' %} class="active"{% endif %}>
                                 <a href="{{ url_for('home') }}">Home</a>
                             </li>
-                            <li{% if request.endpoint == 'message_board' %} class="active"{% endif %}>
-                                <a href="{{ url_for('message_board') }}">Messages</a>
+                            <li{% if request.endpoint == 'messages' %} class="active"{% endif %}>
+                                <a href="{{ url_for('messages') }}">Messages</a>
                             </li>
                             <li{% if request.endpoint == 'members' %} class="active"{% endif %}>
                                 <a href="{{ url_for('members') }}">Members</a>

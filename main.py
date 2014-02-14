@@ -161,12 +161,12 @@ def profile_photo():
 
 @app.route('/messages', methods=['GET'])
 @requires_login
-def message_board():
+def messages():
     form = MessageForm()
     ancestor_key = ndb.Key('MessageBoard', 'main')  # ('MessageBoard', 'main') is the parent of all messages
                                                     # Thus, this puts all messages into a single entity group
     messages = Message.query(ancestor=ancestor_key).order(-Message.posted_date)
-    return render_template('message_board.html', form=form, messages=messages)
+    return render_template('messages.html', form=form, messages=messages)
 
 
 @app.route('/message/new', methods=['POST'])
@@ -177,7 +177,7 @@ def message_new():
         ancestor_key = ndb.Key('MessageBoard', 'main')
         message = Message(parent=ancestor_key, owner_key=g.member.key, body=form.body.data, posted_date=datetime.datetime.now())
         message.put()
-    return redirect(url_for('message_board'))
+    return redirect(url_for('messages'))
 
 
 @app.route('/message/<message_id>', methods=['POST'])
@@ -191,7 +191,7 @@ def message_delete(message_id):
         flash('You may only delete your own message', 'danger')
     else:
         message.key.delete()
-    return redirect(url_for('message_board'))
+    return redirect(url_for('messages'))
 
 
 @app.route('/photos')
