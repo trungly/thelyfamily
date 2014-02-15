@@ -7,7 +7,7 @@ class Facebook(object):
     def auth_url():
         url = 'https://www.facebook.com/dialog/oauth?client_id={app_id}&redirect_uri={redirect_uri}&scope={scope}'.format(
             app_id='254341781341297',
-            redirect_uri='http://localhost:8080/facebook/return',
+            redirect_uri='http://beta.thelyfamily.com/facebook/return',
             scope='user_photos'
         )
         return url
@@ -16,7 +16,7 @@ class Facebook(object):
     def access_token_url(code):
         url = 'https://graph.facebook.com/oauth/access_token?client_id={app_id}&redirect_uri={redirect_uri}&client_secret={app_secret}&code={code}'.format(
             app_id='254341781341297',
-            redirect_uri='http://localhost:8080/facebook/return',
+            redirect_uri='http://beta.thelyfamily.com/facebook/return',
             app_secret='aa5fd19f9925dc31919cca4675ec1246',  # TODO: configurize
             code=code
         )
