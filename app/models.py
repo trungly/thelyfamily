@@ -14,6 +14,7 @@ class Member(ndb.Model):
     first_name_lowercase = ndb.ComputedProperty(lambda self: self.first_name.lower())  # allow case-insensitive login
     last_name = ndb.StringProperty(required=True)
     hashed_password = ndb.StringProperty(required=True)
+    is_visible = ndb.BooleanProperty(default=True)  # whether this user shows up on Members page
 
     profile_key = ndb.KeyProperty(kind='Profile')
     google_user_key = ndb.KeyProperty(kind='GoogleUser')
