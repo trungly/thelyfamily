@@ -1,4 +1,3 @@
-import os
 import requests
 import datetime
 import cgi
@@ -13,24 +12,11 @@ from google.appengine.ext import ndb
 from app.models import Member, Message, InstagramUser, FacebookUser, Photo
 from app.forms import MessageForm, MemberProfileForm, ChangePasswordForm
 from app.facebook import Facebook
-
+from config import configure_app
 
 app = Flask(__name__.split('.')[0])
 
-# TODO: move this configuration stuff to its own module
-app.config.from_object('config.production')
-
-settings = os.environ.get('APP_SETTINGS')
-if 'localhost' in os.environ.get('SERVER_NAME'):
-    app.config.from_object('config.local')
-
-app.config['INSTAGRAM_AUTH_URL'] = 'https://instagram.com/oauth/authorize/?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code'.format(
-    client_id=app.config['CLIENT_ID'],
-    redirect_uri=app.config['REDIRECT_URI'],
-)
-
-app.config['FACEBOOK_AUTH_URL'] = Facebook.auth_url()
-app.config['FACEBOOK_APP_TOKEN'] = '254341781341297'
+configure_app(app)
 
 
 @app.before_request
@@ -221,9 +207,8 @@ def photos():
 def instagram_return():
     """ handle return from Instagram Authentication
     """
-    redirect_uri = current_app.config['REDIRECT_URI']
-    client_id = current_app.config['CLIENT_ID']
-    client_secret = current_app.config['CLIENT_SECRET']
+    client_id = current_app.config['INSTAGRAM_CLIENT_ID']
+    client_secret = current_app.config['INSTAGRAM_CLIENT_SECRET']
 
     code = request.args.get('code', None)
     error = request.args.get('error', None)
@@ -237,7 +222,7 @@ def instagram_return():
             'client_id': client_id,
             'client_secret': client_secret,
             'grant_type': 'authorization_code',
-            'redirect_uri': redirect_uri,
+            'redirect_uri': 'http://%s/photos/return' % current_app.config['HOST_NAME'],
             'code': code,
         }
         response = requests.post(url, data=payload)

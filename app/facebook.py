@@ -1,23 +1,14 @@
-from flask import url_for
+from flask import current_app
 
 
 class Facebook(object):
 
     @staticmethod
-    def auth_url():
-        url = 'https://www.facebook.com/dialog/oauth?client_id={app_id}&redirect_uri={redirect_uri}&scope={scope}'.format(
-            app_id='254341781341297',
-            redirect_uri='http://localhost:8080/facebook/return',
-            scope='user_photos'
-        )
-        return url
-
-    @staticmethod
     def access_token_url(code):
         url = 'https://graph.facebook.com/oauth/access_token?client_id={app_id}&redirect_uri={redirect_uri}&client_secret={app_secret}&code={code}'.format(
-            app_id='254341781341297',
-            redirect_uri='http://localhost:8080/facebook/return',
-            app_secret='aa5fd19f9925dc31919cca4675ec1246',  # TODO: configurize
+            app_id=current_app.config['FACEBOOK_APP_ID'],
+            redirect_uri='http://%s/facebook/return' % current_app.config['HOST_NAME'],
+            app_secret=current_app.config['FACEBOOK_APP_SECRET'],
             code=code
         )
         return url
@@ -27,14 +18,12 @@ class Facebook(object):
         """ Facebook's auth API's are really confusing. This one is called 'Inspect access tokens' in the docs:
         https://developers.facebook.com/docs/facebook-login/manually-build-a-login-flow/#confirm
         In this one, input_token is the token you're inspecting (which was the user's access_token previously).
-        And here, access_token is the app's token.
+        And here, access_token is the app's access token.
+        We're mainly using it to get to the user's userid in order to store in the database
         """
-        app_token = '254341781341297|LI7-LXnYyQ9SeYr0XYnOzvNJBQQ'  # obtained by going to:
-        # https://graph.facebook.com/oauth/access_token?client_id=254341781341297&client_secret=aa5fd19f9925dc31919cca4675ec1246&grant_type=client_credentials
-
         url = 'https://graph.facebook.com/debug_token?input_token={input_token}&access_token={access_token}'.format(
             input_token=access_token,
-            access_token=app_token
+            access_token=current_app['FACEBOOK_ACCESS_TOKEN']
         )
         return url
 
