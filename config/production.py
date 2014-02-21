@@ -8,6 +8,6 @@ INSTAGRAM_CLIENT_SECRET = '9fe9f63f65644d2a8fa68740e70f9a9a'
 
 # Facebook
 FACEBOOK_APP_ID = '1408819302707661'
-FACEBOOK_SECRET_KEY = '7f00476bf9f06af27796ec4aebe62339'
-FACEBOOK_APP_TOKEN = '1408819302707661|EzmoyrPqydy4XImhr5fCtjRIVfY'  # obtained by going to:
+FACEBOOK_APP_SECRET = '7f00476bf9f06af27796ec4aebe62339'
+FACEBOOK_ACCESS_TOKEN = '1408819302707661|EzmoyrPqydy4XImhr5fCtjRIVfY'  # obtained by going to:
 # https://graph.facebook.com/oauth/access_token?client_id=1408819302707661&client_secret=7f00476bf9f06af27796ec4aebe62339&grant_type=client_credentials

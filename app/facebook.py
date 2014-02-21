@@ -23,7 +23,7 @@ class Facebook(object):
         """
         url = 'https://graph.facebook.com/debug_token?input_token={input_token}&access_token={access_token}'.format(
             input_token=access_token,
-            access_token=current_app['FACEBOOK_ACCESS_TOKEN']
+            access_token=current_app.config['FACEBOOK_ACCESS_TOKEN']
         )
         return url
 
