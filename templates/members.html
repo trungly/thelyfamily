@@ -7,22 +7,25 @@
         </h2>
     </div>
 
-    <table class="table table-striped table-hover">
+    <table class="table table-striped table-hover" id="members-table">
         <thead>
-        <th>Name</th>
-        <th>Primary Email</th>
-        <th>Secondary Email</th>
-        <th>Address</th>
-        <th>Mobile Phone</th>
-        <th>Home Phone</th>
-        <th>Work Phone</th>
-        <th>Birthday</th>
+            <tr>
+                <th>Name</th>
+                <th>Birthday</th>
+                <th>Primary Email</th>
+                <th>Secondary Email</th>
+                <th>Address</th>
+                <th>Mobile Phone</th>
+                <th>Home Phone</th>
+                <th>Work Phone</th>
+            </tr>
         </thead>
         <tbody>
         {% for member in members %}
             {% if member.is_visible %}
             <tr>
                 <td>{{ member.first_name }} {{ member.last_name }}</td>
+                <td>{{ member.profile.birthday.strftime('%m/%d/%Y') if member.profile.birthday else '' }}</td>
                 <td>{{ member.profile.primary_email }}</td>
                 <td>{{ member.profile.secondary_email }}</td>
                 <td>{{ member.profile.address }}<br>
@@ -31,10 +34,23 @@
                 <td>{{ member.profile.mobile_phone }}</td>
                 <td>{{ member.profile.home_phone }}</td>
                 <td>{{ member.profile.work_phone }}</td>
-                <td>{{ member.profile.birthday.strftime('%m/%d/%Y') if member.profile.birthday else '' }}</td>
             </tr>
             {% endif %}
         {% endfor %}
         </tbody>
     </table>
 {% endblock body %}
+
+{% block javascript %}
+    <link rel="stylesheet" href="/static/css/tablesorter/theme.default.css">
+    <link rel="stylesheet" href="/static/css/tablesorter/theme.bootstrap.css">
+    <script type="text/javascript" src="/static/js/tablesorter/jquery.tablesorter.min.js"></script>
+    <script type="text/javascript" src="/static/js/tablesorter/jquery.tablesorter.widgets.min.js"></script>
+    <script>
+        $(function() {
+            $("#members-table").tablesorter({
+                sortList: [[1,0], [0,0]]
+            });
+        });
+    </script>
+{% endblock javascript %}
