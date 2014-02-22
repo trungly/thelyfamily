@@ -43,9 +43,11 @@
     </table>
 {% endblock body %}
 
-{% block javascript %}
+{% block stylesheet %}
     <link rel="stylesheet" href="/static/css/tablesorter/theme.default.css">
-    <link rel="stylesheet" href="/static/css/tablesorter/theme.bootstrap.css">
+{% endblock stylesheet %}
+
+{% block javascript %}
     <script type="text/javascript" src="/static/js/tablesorter/jquery.tablesorter.min.js"></script>
     <script type="text/javascript" src="/static/js/tablesorter/jquery.tablesorter.widgets.min.js"></script>
     <script>
