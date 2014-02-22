@@ -15,6 +15,7 @@ class Member(ndb.Model):
     last_name = ndb.StringProperty(required=True)
     hashed_password = ndb.StringProperty(required=True)
     is_visible = ndb.BooleanProperty(default=True)  # whether this user shows up on Members page
+    age = ndb.ComputedProperty(lambda self: self.current_age())
 
     profile_key = ndb.KeyProperty(kind='Profile')
     google_user_key = ndb.KeyProperty(kind='GoogleUser')
@@ -41,6 +42,11 @@ class Member(ndb.Model):
             return self.facebook_user_key.get()
         else:
             return FacebookUser.create_for_member(self)
+
+    def current_age(self):
+        if not self.profile.birthday:
+            return ''
+        return int((datetime.date.today() - self.profile.birthday).days/365.2425)
 
     def set_password(self, password):
         self.hashed_password = generate_password_hash(password)
