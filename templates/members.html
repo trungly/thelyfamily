@@ -11,7 +11,7 @@
         <thead>
             <tr>
                 <th>Name</th>
-                <th>Birthday</th>
+                <th>Birth Date</th>
                 <th>Age</th>
                 <th>Primary Email</th>
                 <th>Secondary Email</th>
@@ -26,7 +26,7 @@
             {% if member.is_visible %}
             <tr>
                 <td>{{ member.first_name }} {{ member.last_name }}</td>
-                <td>{{ member.profile.birthday.strftime('%m/%d/%Y') if member.profile.birthday else '' }}</td>
+                <td>{{ member.profile.birth_date.strftime('%m/%d/%Y') if member.profile.birth_date else '' }}</td>
                 <td>{{ member.age }}</td>
                 <td>{{ member.profile.primary_email }}</td>
                 <td>{{ member.profile.secondary_email }}</td>

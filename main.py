@@ -126,7 +126,7 @@ def profile_update():
     profile.mobile_phone = form.mobile_phone.data
     profile.home_phone = form.home_phone.data
     profile.work_phone = form.work_phone.data
-    profile.birthday = form.birthday.data
+    profile.birth_date = form.birth_date.data
 
     profile.put()
     g.member.put()

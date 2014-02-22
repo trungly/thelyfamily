@@ -7,7 +7,7 @@ from app.models import Message, Profile
 
 
 BaseProfileForm = model_form(Profile, Form, field_args={
-    'birthday': {'validators': [validators.optional()]}}  # disable DateField validator
+    'birth_date': {'validators': [validators.optional()]}}  # disable DateField validator
 )
 
 

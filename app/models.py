@@ -44,9 +44,9 @@ class Member(ndb.Model):
             return FacebookUser.create_for_member(self)
 
     def current_age(self):
-        if not self.profile.birthday:
+        if not self.profile.birth_date:
             return ''
-        return int((datetime.date.today() - self.profile.birthday).days/365.2425)
+        return int((datetime.date.today() - self.profile.birth_date).days/365.2425)
 
     def set_password(self, password):
         self.hashed_password = generate_password_hash(password)
@@ -68,7 +68,7 @@ class Profile(ndb.Model):
     mobile_phone = ndb.StringProperty()
     home_phone = ndb.StringProperty()
     work_phone = ndb.StringProperty()
-    birthday = ndb.DateProperty()  # todo: change to birth_date
+    birth_date = ndb.DateProperty()
     photo_key = ndb.BlobKeyProperty()
 
     @property
