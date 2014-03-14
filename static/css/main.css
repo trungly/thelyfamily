@@ -33,6 +33,16 @@ html {
     margin-top: 15px;
 }
 
+#messages-container {
+    overflow: auto;
+    margin-bottom: 20px;
+    border: 1px solid #999;
+}
+
+#messages-list {
+    display: none;
+}
+
 /* Custom Gallery Styles */
 .blueimp-gallery .modal-body {
     padding: 0 0 100%;

@@ -8,11 +8,13 @@ from flask import Flask, url_for, request, flash, render_template, redirect, cur
 from werkzeug.exceptions import BadRequest, Unauthorized
 from google.appengine.ext import blobstore
 from google.appengine.ext import ndb
+from google.appengine.api import xmpp
 
-from app.models import Member, Message, InstagramUser, FacebookUser, Photo
+from app.models import Member, Message, InstagramUser, FacebookUser, Photo, ChatSubscriber, ChatMessage
 from app.forms import MessageForm, MemberProfileForm, ChangePasswordForm
 from app.facebook import Facebook
 from config import configure_app
+
 
 app = Flask(__name__.split('.')[0])
 
@@ -316,3 +318,96 @@ def social():
 @requires_login
 def wishlists():
     return render_template('wishlists.html')
+
+
+###############
+# Chat Stuffs #
+###############
+
+######################## DON'T NEED YET
+# Check online statuses of all subscribers
+# Accepts a comma-delimited list of subscribers and returns a JSON dictionary denoting status
+@app.route('/chat/status', methods=['GET'])
+@requires_login
+def check_status():
+    # for subscriber in ChatSubscriber.query():
+    #     xmpp.send_presence(subscriber, presence_type=xmpp.PRESENCE_TYPE_PROBE)
+    here = xmpp.send_presence('the-ly-family@appspot.com', presence_type=xmpp.PRESENCE_TYPE_PROBE)
+    return '', 200
+
+
+@app.route('/_ah/xmpp/presence/available/', methods=['POST'])
+def xmpp_probe():
+    form = request.form
+    return '', 200
+######################## DON'T NEED YET
+
+
+# 0) Member visits the chat page
+@app.route('/chat', methods=['GET'])
+@requires_login
+def chat():
+    # cutoff = datetime.datetime.now() - datetime.timedelta(weeks=4)
+    # messages = ChatMessage.query(ChatMessage.posted_date > cutoff).order(ChatMessage.posted_date)
+    return render_template('chat.html')
+
+
+@app.route('/chat/messages', methods=['GET'])
+@requires_login
+def chat_messages():
+    cutoff = datetime.datetime.now() - datetime.timedelta(weeks=4)
+    results = ChatMessage.query(ChatMessage.posted_date > cutoff).order(ChatMessage.posted_date)
+    messages = [{'sender': m.sender, 'body': m.body, 'date': m.humanized_posted_date} for m in results]
+    messages = messages + messages + messages
+    return jsonify({'messages': messages})
+
+
+# 1) Member clicks a link to send a chat invitation out to himself
+@app.route('/chat/invite', methods=['GET'])
+@requires_login
+def send_invite():
+    # 1a) The chat service sends an invite to the XMPP user
+    xmpp.send_invite(request.args['to'])
+    return '', 200
+
+
+# 2) This is called when the user accepts the invite using his XMPP (Gtalk) chat client
+@app.route('/_ah/xmpp/subscription/subscribed/', methods=['POST'])
+def xmpp_subscribed():
+    # 2a) We add him to the list of chat subscribers
+    jid = request.form['from'].split('/')[0]
+    ChatSubscriber.add_subscriber(jid)
+    return '', 200
+
+
+# 3) A site member posts a message to the chat server that includes his first name prepended
+@app.route('/chat/send', methods=['POST'])
+@requires_login
+def chat_send():
+    # 3a) We only send the message to the main site XMPP user
+    from_jid = '%s@the-ly-family.appspotchat.com' % g.member.first_name
+    status_code = xmpp.send_message('the-lyfamily@appspot.com', request.form['message'], from_jid=from_jid)
+    return '', 200
+
+
+# 4) This is called when the message is received by the site XMPP user
+@app.route('/_ah/xmpp/message/chat/', methods=['POST'])
+def xmpp_receive_message():
+    message = xmpp.Message(request.form)
+
+    # 4a) Write the message to the database
+    ChatMessage.save_message(message.sender, message.body)
+
+    # 4b) Broadcast the message to all chat subscribers
+    for subscriber in ChatSubscriber.query():
+        status_code = xmpp.send_message(subscriber.key.id(), message)
+    return '', 200
+
+
+# 5) The user decides to unsubscribe from the chat
+@app.route('/chat/remove', methods=['POST'])
+@requires_login
+def chat_remove():
+    jid = request.form['subscriber']
+    ChatSubscriber.remove_subscriber(jid)
+    return '', 200

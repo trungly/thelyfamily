@@ -37,6 +37,13 @@ handlers:
 builtins:
 - remote_api: on
 
+# Enable incoming XMPP chat services
+inbound_services:
+- xmpp_message
+- xmpp_presence
+- xmpp_subscribe
+- xmpp_error
+
 # Third party libraries that are included in the App Engine SDK must be listed
 # here if you want to use them.  See
 # https://developers.google.com/appengine/docs/python/tools/libraries27 for

@@ -1,0 +1,76 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+    <div class="page-header">
+        <h2>Group Chat
+            <small>Public speaking</small>
+        </h2>
+    </div>
+
+    <div class="container" ng-app="chatMessagesApp">
+        <div class="row clearfix">
+            <div class="col-md-7 column" ng-controller="ChatMessagesController">
+                <div id="messages-container">
+                    <ul id="messages-list" class="list-group">
+                        <li class="list-group-item" ng-repeat="message in messages" my-post-repeat-directive>
+                            {% raw %}
+                            <span id="message-{{ $index }}">{{ message.sender }}</span> {{ message.body }}
+                            {% endraw %}
+                        </li>
+                    </ul>
+                </div>
+                <form class="form-horizontal" method="post" action="/chat" role="form">
+                    <div class="col-md-10 column">
+                        <input type="text" class="form-control" name="message"/>
+                    </div>
+                    <div class="col-md-2 column">
+                        <button type="submit" class="form-control btn btn-primary">Send</button>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-3 column">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <span class="glyphicon glyphicon-comment"></span>
+                        Group Chat!
+                    </div>
+                    <div class="panel-body">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock body %}
+
+{% block javascript %}
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.14/angular.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.14/angular-animate.js"></script>
+    <script>
+        var chatMessagesApp = angular.module('chatMessagesApp', ['ngAnimate'])
+                .directive('myPostRepeatDirective', function() {
+                    return function(scope, element, attrs) {
+                        // Scroll to the last chat message
+                        if (scope.$last) {
+                            $("#messages-container").scrollTop(element.parent().children(':last')[0].offsetTop)
+                        };
+                    };
+                });
+
+        chatMessagesApp.controller('ChatMessagesController', function($scope, $http) {
+            $http.get('/chat/messages').success(function(data) {
+                $scope.messages = data.messages;
+                var windowHeight = $(window).innerHeight();
+                var pageHeaderHeight = $('.page-header').height();
+                var navbarHeight = $('.navbar').height();
+                var formHeight = 68;
+                $('#messages-container').css('height', windowHeight-pageHeaderHeight-pageHeaderHeight-navbarHeight-formHeight-50);
+                $('#messages-list').fadeIn();
+            });
+        });
+
+        var onFinishRender = function() {
+            document.getElementById("messages-list").scrollTop = document.getElementById("message-3").offsetTop;
+        }
+    </script>
+{% endblock javascript %}
