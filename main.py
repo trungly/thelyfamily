@@ -92,14 +92,22 @@ def home():
 @requires_login
 def profile():
     form = MemberProfileForm(request.form, g.member.profile)
+    return _render_profile(form)
+
+
+def _render_profile(form):
     form.member_id.data = g.member.key.id()
     form.first_name.data = g.member.first_name
     form.last_name.data = g.member.last_name
     photo_upload_url = blobstore.create_upload_url(url_for('profile_photo'))
     profile_photo_url = g.member.profile.photo_url
-    password_form = ChangePasswordForm()
-
-    return render_template('profile.html', form=form, password_form=password_form, photo_upload_url=photo_upload_url, profile_photo_url=profile_photo_url)
+    context = {
+        'form': form,
+        'password_form': ChangePasswordForm(),
+        'photo_upload_url': photo_upload_url,
+        'profile_photo_url': profile_photo_url,
+    }
+    return render_template('profile.html', **context)
 
 
 @app.route('/profile', methods=['POST'])
@@ -112,7 +120,7 @@ def profile_update():
         return Unauthorized()
 
     if not form.validate():
-        return render_template('profile.html', form=form)
+        return _render_profile(form)
 
     profile = g.member.profile_key.get()
 

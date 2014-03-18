@@ -99,7 +99,7 @@
                                 </div>
                                 <div class="col-md-4 column">
                                     <div class="form-group">
-                                        {{ form_field(form.birth_date, type='date') }}
+                                        {{ form_field(form.birth_date, type='text', class_='datepicker', placeholder='yyyy-mm-dd') }}
                                     </div>
                                 </div>
                             </div>
@@ -123,10 +123,10 @@
                                     {{ form_field(form.mobile_phone, placeholder='format: 310-555-1234') }}
                                 </div>
                                 <div class="col-md-4 column">
-                                    {{ form_field(form.home_phone) }}
+                                    {{ form_field(form.home_phone, placeholder='format: 310-555-1234') }}
                                 </div>
                                 <div class="col-md-4 column">
-                                    {{ form_field(form.work_phone) }}
+                                    {{ form_field(form.work_phone, placeholder='format: 310-555-1234') }}
                                 </div>
                             </div>
 
@@ -176,8 +176,14 @@
 {% endblock body %}
 
 
+{% block stylesheet %}
+<link rel="stylesheet" href="/static/css/datepicker.css">
+{% endblock stylesheet %}
+
+
 {% block javascript %}
 <script src="static/js/iphone-style-checkboxes.js" type="text/javascript" charset="utf-8"></script>
+<script src="static/js/bootstrap-datepicker.js" type="text/javascript" charset="utf-8"></script>
 <script>
     $(function() {
 
@@ -267,6 +273,7 @@
             });
         });
 
+        $('.datepicker').datepicker({format: 'yyyy-mm-dd'});
     });
 </script>
 {% endblock javascript %}
