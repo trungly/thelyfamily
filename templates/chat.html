@@ -14,14 +14,14 @@
                     <ul id="messages-list" class="list-group">
                         <li class="list-group-item" ng-repeat="message in messages" my-post-repeat-directive>
                             {% raw %}
-                            <span id="message-{{ $index }}">{{ message.sender }}</span> {{ message.body }}
+                            <span>{{ message.sender }}</span> {{ message.body }}
                             {% endraw %}
                         </li>
                     </ul>
                 </div>
-                <form class="form-horizontal" method="post" action="/chat" role="form">
+                <form ng-submit="sendMessage()" role="form">
                     <div class="col-md-10 column">
-                        <input type="text" class="form-control" name="message"/>
+                        <input type="text" class="form-control" name="message" ng-model="message"/>
                     </div>
                     <div class="col-md-2 column">
                         <button type="submit" class="form-control btn btn-primary">Send</button>
@@ -29,18 +29,33 @@
                 </form>
             </div>
             <div class="col-md-3 column">
-                <div class="panel panel-default">
+                <div class="panel panel-default" ng-controller="ChatInviteController">
+                    <div class="panel-heading">Send yourself (or someone else) a chat invite</div>
+                    <div class="panel-body">
+                        <form ng-submit="sendInvite()" role="form">
+                            <input type="text" class="" name="to" ng-model="toAddress"/>
+                            <button type="submit" class="pull-right btn btn-warning">Send</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="panel panel-default" ng-controller="ChatStatusController">
                     <div class="panel-heading">
                         <span class="glyphicon glyphicon-comment"></span>
-                        Group Chat!
+                        Who's Online
                     </div>
                     <div class="panel-body">
+                        <ul id="subscribers-list" class="list-group">
+                            <li class="list-group-item" ng-repeat="subscriber in subscribers">
+                                {% raw %}
+                                <span ng-class="subscriber.status">{{ subscriber.name }}</span>
+                                {% endraw %}
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
 {% endblock body %}
 
 {% block javascript %}
@@ -52,25 +67,45 @@
                     return function(scope, element, attrs) {
                         // Scroll to the last chat message
                         if (scope.$last) {
-                            $("#messages-container").scrollTop(element.parent().children(':last')[0].offsetTop)
-                        };
+                            $("#messages-container").scrollTop(element.parent().children(':last')[0].offsetTop);
+                        }
                     };
                 });
 
-        chatMessagesApp.controller('ChatMessagesController', function($scope, $http) {
+        var getMessages = function($scope, $http) {
             $http.get('/chat/messages').success(function(data) {
                 $scope.messages = data.messages;
                 var windowHeight = $(window).innerHeight();
                 var pageHeaderHeight = $('.page-header').height();
                 var navbarHeight = $('.navbar').height();
-                var formHeight = 68;
+                var formHeight = 68; // this is what i measured, but actual form had 0 height
                 $('#messages-container').css('height', windowHeight-pageHeaderHeight-pageHeaderHeight-navbarHeight-formHeight-50);
                 $('#messages-list').fadeIn();
             });
+        };
+
+        chatMessagesApp.controller('ChatMessagesController', function($scope, $http) {
+            getMessages($scope, $http);
+            $scope.sendMessage = function() {
+                $http.post('/chat/send', {'message': $scope.message}).success(function(data) {
+                    getMessages($scope, $http);
+                });
+            }
         });
 
-        var onFinishRender = function() {
-            document.getElementById("messages-list").scrollTop = document.getElementById("message-3").offsetTop;
-        }
+        chatMessagesApp.controller('ChatInviteController', function($scope, $http) {
+            $scope.toAddress = "{{ g.member.profile.primary_email or '' }}";
+            $scope.sendInvite = function() {
+                $http.get('/chat/invite?to=' + $scope.toAddress)
+            }
+        });
+
+        chatMessagesApp.controller('ChatStatusController', function($scope, $http) {
+            // TODO: call this every 'n' seconds
+            $http.get('/chat/subscribers').success(function(data) {
+                $scope.subscribers = data.subscribers;
+                $('#subscribers-list').fadeIn();
+            });
+        });
     </script>
 {% endblock javascript %}

@@ -191,6 +191,7 @@ class ChatSubscriber(ndb.Model):
     """ This is simply a persisted list of jids, which is an XMPP chat address
     Here, we use jid as the special unique "key_name", an NDB concept that acts as a unique id for the entity
     """
+    is_online = ndb.BooleanProperty()
 
     @classmethod
     def add_subscriber(cls, jid):

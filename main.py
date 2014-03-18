@@ -5,7 +5,7 @@ import cgi
 # sys.path includes 'server/lib' due to appengine_config.py
 from functools import wraps
 from flask import Flask, url_for, request, flash, render_template, redirect, current_app, g, session, jsonify
-from werkzeug.exceptions import BadRequest, Unauthorized
+from werkzeug.exceptions import BadRequest, Unauthorized, NotFound
 from google.appengine.ext import blobstore
 from google.appengine.ext import ndb
 from google.appengine.api import xmpp
@@ -324,87 +324,122 @@ def wishlists():
 # Chat Stuffs #
 ###############
 
-######################## DON'T NEED YET
-# Check online statuses of all subscribers
-# Accepts a comma-delimited list of subscribers and returns a JSON dictionary denoting status
-@app.route('/chat/status', methods=['GET'])
-@requires_login
-def check_status():
-    # for subscriber in ChatSubscriber.query():
-    #     xmpp.send_presence(subscriber, presence_type=xmpp.PRESENCE_TYPE_PROBE)
-    here = xmpp.send_presence('the-ly-family@appspot.com', presence_type=xmpp.PRESENCE_TYPE_PROBE)
-    return '', 200
+#### Consider sending a (self) presence message to all chat subscribers when the app starts up, and
+####   on a shutdown hook, send a presence of unavailable
 
+######################## Begin Chat Status
 
 @app.route('/_ah/xmpp/presence/available/', methods=['POST'])
-def xmpp_probe():
-    form = request.form
+def xmpp_subscriber_available():
+    """ Called when a user comes online
+    """
+    from_address = request.form.get('from')
+    key = ndb.Key(ChatSubscriber, from_address)
+    subscriber = key.get()
+    if subscriber:
+        subscriber.is_online = True
+        subscriber.put()
+        return '', 200
+    return NotFound()
+
+
+@app.route('/_ah/xmpp/presence/unavailable/', methods=['POST'])
+def xmpp_subscriber_unavailable():
+    """ Called when a user goes offline
+    """
+    from_address = request.form.get('from')
+    key = ndb.Key(ChatSubscriber, from_address)
+    subscriber = key.get()
+    if subscriber:
+        subscriber.is_online = False
+        subscriber.put()
+        return '', 200
+    return NotFound()
+
+
+@app.route('/_ah/xmpp/presence/probe/', methods=['POST'])
+def xmpp_subscriber_probe():
+    """ Called when someone requests to see if the main website chat user is online
+    """
     return '', 200
-######################## DON'T NEED YET
+
+######################## End Chat Status
 
 
-# 0) Member visits the chat page
+# 1) Member visits the chat page
 @app.route('/chat', methods=['GET'])
 @requires_login
 def chat():
-    # cutoff = datetime.datetime.now() - datetime.timedelta(weeks=4)
-    # messages = ChatMessage.query(ChatMessage.posted_date > cutoff).order(ChatMessage.posted_date)
+    # 1a) Request online status of each subscriber
+    for subscriber in ChatSubscriber.query():
+        xmpp.send_presence(subscriber, presence_type=xmpp.PRESENCE_TYPE_PROBE)
     return render_template('chat.html')
 
 
+# 2) Asynchronously request all chat messages
 @app.route('/chat/messages', methods=['GET'])
 @requires_login
 def chat_messages():
     cutoff = datetime.datetime.now() - datetime.timedelta(weeks=4)
     results = ChatMessage.query(ChatMessage.posted_date > cutoff).order(ChatMessage.posted_date)
     messages = [{'sender': m.sender, 'body': m.body, 'date': m.humanized_posted_date} for m in results]
-    messages = messages + messages + messages
     return jsonify({'messages': messages})
 
 
-# 1) Member clicks a link to send a chat invitation out to himself
+# 3) Asynchronously request all subscribers (including their online status)
+@app.route('/chat/subscribers', methods=['GET'])
+@requires_login
+def chat_subscribers():
+    subscribers = [{'name': s.key.id(), 'status': 'online' if s.is_online else 'offline'}
+                   for s in ChatSubscriber.query()]
+    return jsonify({'subscribers': subscribers})
+
+
+# 4) Member clicks a link to send a chat invitation out to himself
 @app.route('/chat/invite', methods=['GET'])
 @requires_login
 def send_invite():
-    # 1a) The chat service sends an invite to the XMPP user
+    # 4a) The chat service sends an invite to the XMPP user
     xmpp.send_invite(request.args['to'])
     return '', 200
 
 
-# 2) This is called when the user accepts the invite using his XMPP (Gtalk) chat client
+# 5) This is called when the user accepts the invite using his XMPP (Gtalk) chat client
 @app.route('/_ah/xmpp/subscription/subscribed/', methods=['POST'])
 def xmpp_subscribed():
-    # 2a) We add him to the list of chat subscribers
+    # 5a) We add him to the list of chat subscribers
     jid = request.form['from'].split('/')[0]
     ChatSubscriber.add_subscriber(jid)
     return '', 200
 
 
-# 3) A site member posts a message to the chat server that includes his first name prepended
+# 5) A site member posts a message to the chat server
 @app.route('/chat/send', methods=['POST'])
 @requires_login
 def chat_send():
-    # 3a) We only send the message to the main site XMPP user
+    # 5a) We only send the message to the main site XMPP user
     from_jid = '%s@the-ly-family.appspotchat.com' % g.member.first_name
-    status_code = xmpp.send_message('the-lyfamily@appspot.com', request.form['message'], from_jid=from_jid)
+    message = request.json['message']
+    if message:
+        xmpp.send_message('the-lyfamily@appspot.com', message, from_jid=from_jid)
     return '', 200
 
 
-# 4) This is called when the message is received by the site XMPP user
+# 6) This is called when the message is received by the site XMPP user
 @app.route('/_ah/xmpp/message/chat/', methods=['POST'])
 def xmpp_receive_message():
     message = xmpp.Message(request.form)
 
-    # 4a) Write the message to the database
+    # 6a) Write the message to the database
     ChatMessage.save_message(message.sender, message.body)
 
-    # 4b) Broadcast the message to all chat subscribers
+    # 6b) Broadcast the message to all chat subscribers
     for subscriber in ChatSubscriber.query():
-        status_code = xmpp.send_message(subscriber.key.id(), message)
+        xmpp.send_message(subscriber.key.id(), message)
     return '', 200
 
 
-# 5) The user decides to unsubscribe from the chat
+# 7) The user decides to unsubscribe from the chat
 @app.route('/chat/remove', methods=['POST'])
 @requires_login
 def chat_remove():
