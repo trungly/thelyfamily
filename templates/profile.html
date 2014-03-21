@@ -17,7 +17,11 @@
                     </div>
                     <div class="panel-body">
                         <a href="#" data-toggle="modal" data-target="#photo-upload-modal">
-                            <img src="{{ profile_photo_url or '/static/images/male_bust.jpg' }}" class="center-block">
+                            {% if profile_photo_url %}
+                            <img src="{{ profile_photo_url }}" width="100%" class="center-block">
+                            {% else %}
+                            <img src="/static/images/male_bust.jpg" class="center-block">
+                            {% endif %}
                         </a>
                         <!-- Photo Upload Modal -->
                         <div class="modal fade" id="photo-upload-modal" tabindex="-1" role="dialog" aria-labelledby="photo-upload-modal-label"
@@ -34,6 +38,7 @@
                                             <div class="alert alert-warning"><strong>Warning!</strong> Clicking the <strong>Upload</strong> button will reload the entire page.
                                             If you have unsaved changes on the main page, press <strong>Cancel</strong> and save your profile before
                                             uploading a photo.</div>
+                                            <div class="alert alert-info">We recommend uploading a square (equal width and height) headshot of yourself since this picture will be used in places like the Message Board.</div>
                                             <input class="form-control input-file" id="profile_photo" name="profile_photo" type="file">
                                         </div>
                                         <div class="modal-footer">
