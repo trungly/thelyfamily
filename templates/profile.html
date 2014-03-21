@@ -14,13 +14,16 @@
                     <div class="panel-heading">
                         <span class="glyphicon glyphicon-user"></span>
                         Click to change profile picture
+                        {% if profile_photo_url %}
+                            <span id="delete-profile-photo" class="glyphicon glyphicon-trash pull-right"></span>
+                        {% endif %}
                     </div>
                     <div class="panel-body">
                         <a href="#" data-toggle="modal" data-target="#photo-upload-modal">
                             {% if profile_photo_url %}
-                            <img src="{{ profile_photo_url }}" width="100%" class="center-block">
+                                <img id="profile-photo" src="{{ profile_photo_url }}" width="100%" class="center-block">
                             {% else %}
-                            <img src="/static/images/male_bust.jpg" class="center-block">
+                                <img src="/static/images/male_bust.jpg" class="center-block">
                             {% endif %}
                         </a>
                         <!-- Photo Upload Modal -->
@@ -245,6 +248,13 @@
             $("#first_name").removeAttr("disabled")
             $("#update-profile-form").submit();
         })
+
+        // reset the profile photo to the default image and send a request to delete the photo from the backend
+        $("#delete-profile-photo").click(function(event) {
+            $("#delete-profile-photo").hide();
+            $("#profile-photo").replaceWith("<img src='/static/images/male_bust.jpg' class='center-block'>");
+            $.post("/profile/photo/delete")
+        });
 
         // submit change password form
         $("#change-password-form").submit(function(event) {

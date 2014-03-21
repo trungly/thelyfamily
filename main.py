@@ -149,10 +149,21 @@ def profile_update():
 @requires_login
 def profile_photo():
     _, params = cgi.parse_header(request.files['profile_photo'].headers['Content-Type'])
-    profile = g.member.profile_key.get()
+    profile = g.member.profile
     profile.photo_key = blobstore.BlobKey(params['blob-key'])
     profile.put()
     return redirect(url_for('profile'))
+
+
+@app.route('/profile/photo/delete', methods=['POST'])
+@requires_login
+def profile_photo_delete():
+    profile = g.member.profile
+    photo_key = profile.photo_key
+    blobstore.delete(photo_key)
+    profile.photo_key = None
+    profile.put()
+    return '', 200
 
 
 @app.route('/messages', methods=['GET'])
