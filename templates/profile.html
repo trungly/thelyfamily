@@ -73,13 +73,14 @@
             <div class="col-md-7 column">
                 <div class="row sub-nav"> <!-- Sub nav -->
                     <ul class="nav nav-tabs" id="tabs">
-                        <li class="active"><a href="#basic" data-toggle="tab">Basic Profile</a></li>
+                        <li class="active"><a href="#basic-info" data-toggle="tab">Basic Info</a></li>
                         <li><a href="#change-password" data-toggle="tab">Change Password</a></li>
                         <li><a href="#connect-accounts" data-toggle="tab">Connect Accounts</a></li>
+                        <li><a href="#update-notifications" data-toggle="tab">Update Notifications</a></li>
                     </ul>
                 </div>
                 <div class="tab-content">
-                    <div class="tab-pane active" id="basic">
+                    <div class="tab-pane active" id="basic-info">
                         {% from "_formhelpers.html" import form_field %}
                         <form id="update-profile-form" method="post" action="/profile" role="form">
                             {{ form.hidden_tag() }}
@@ -175,6 +176,23 @@
                                 <td>Access your Google+ feed. <br>Not yet implemented.</td>
                             </tr>
                         </table>
+                    </div>
+                    <div class="tab-pane" id="update-notifications">
+                        <form id="update-notifications-form" method="post" role="form">
+                            <table class="table">
+                                <tr>
+                                    <td><input type="checkbox" name="notify_message_posted"{% if form.notify_message_posted.data %} checked{% endif %}/></td>
+                                    <td><label for="message_board_toggle">Message Board</label></td>
+                                    <td>Email me when new messages are posted on the Message Board</td>
+                                </tr>
+                                <tr>
+                                    <td><input type="checkbox" name="notify_birthday_reminders"{% if form.notify_birthday_reminders.data %} checked{% endif %}/></td>
+                                    <td><label for="birthday_reminder_toggle">Birthday Reminders</label></td>
+                                    <td>Email me when someone's birthday is approaching</td>
+                                </tr>
+                            </table>
+                            <button id="update-notifications-button" type="submit" class="btn btn-primary">Save</button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -287,6 +305,21 @@
                 }
             });
         });
+
+        // submit update notifications form
+        $("#update-notifications-form").submit(function(event) {
+            event.preventDefault();
+            $.ajax({
+                type: "POST",
+                url: "/profile/notifications/update",
+                data: $(this).serializeArray(),
+                success: function() {
+                    var $success_text = $("<span style='display: none; color: green; margin-left: 10px'>Saved!</span>");
+                    $success_text.insertAfter("#update-notifications-button").fadeIn().fadeOut(4000);
+                }
+            });
+        });
+
 
         $('.datepicker').datepicker({format: 'yyyy-mm-dd'});
     });

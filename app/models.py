@@ -71,6 +71,8 @@ class Profile(ndb.Model):
     work_phone = ndb.StringProperty()
     birth_date = ndb.DateProperty()
     photo_key = ndb.BlobKeyProperty()
+    notify_message_posted = ndb.BooleanProperty()
+    notify_birthday_reminders = ndb.BooleanProperty()
 
     @property
     def member(self):
@@ -79,6 +81,15 @@ class Profile(ndb.Model):
     @property
     def photo_url(self):
         return images.get_serving_url(str(self.photo_key)) if self.photo_key else None
+
+    def update_notifications(self, selections):
+        all_notify_flags = ['notify_message_posted', 'notify_birthday_reminders']
+        for flag in all_notify_flags:
+            # clear notification flags first because only selected checkbox selections get submitted here
+            setattr(self, flag, False)
+            if flag in selections:
+                setattr(self, flag, True)
+        self.put()
 
     @classmethod
     def create_for_member(cls, member):

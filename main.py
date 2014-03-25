@@ -166,6 +166,16 @@ def profile_photo_delete():
     return '', 200
 
 
+@app.route('/profile/notifications/update', methods=['POST'])
+@requires_login
+def update_notifications():
+    if not request.is_xhr:
+        return BadRequest()
+
+    g.member.profile.update_notifications(request.form)
+    return '', 200
+
+
 @app.route('/messages', methods=['GET'])
 @requires_login
 def messages():
