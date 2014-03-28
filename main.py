@@ -197,11 +197,17 @@ def message_new():
         message.put()
 
         # Send notification emails to everyone subscribed
+        author = g.member.first_name
+        posted_date = datetime.datetime.now().strftime('%A, %B %-d, %Y at %I:%M %p')
         photo_url = g.member.profile.photo_url
+        if photo_url:
+            image = '%s=s60' % photo_url
+        else:
+            image = 'http://www.thelyfamily.com/static/images/male_bust.jpg'
         html_body = render_template('email/new_message_posted.html', **dict(
-            author=g.member.first_name,
-            posted_date=datetime.datetime.now().strftime('%A, %B %-d, %Y at %I:%M %p'),
-            image='%s=s60' % photo_url if photo_url else url_for('static', filename='images/male_bust.jpg', _external=True),
+            author=author,
+            posted_date=posted_date,
+            image=image,
             message_body=message.body,
         ))
         for subscriber in Profile.query(Profile.notify_message_posted == True):
@@ -210,7 +216,8 @@ def message_new():
                     'The Ly Family <messageboard@thelyfamily.com>',
                     subscriber.primary_email,
                     '%s posted a new message on TheLyFamily.com' % g.member.first_name,
-                    html_body,
+                    '%s wrote this on %s: %s' % (author, posted_date, message.body),
+                    html=html_body,
                     # reply_to='messageboard@thelyfamily.com'  # TODO: this should post a message on the message board
                 )
     return redirect(url_for('messages'))
