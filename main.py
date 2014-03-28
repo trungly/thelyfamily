@@ -54,6 +54,8 @@ def login():
 
     if member and member.check_password(request.form['password']):
         session['member_id'] = member.key.id()
+        if request.form.get('stay_logged_in', False):
+            session.permanent = True
         return '', 200
 
     return Unauthorized()
