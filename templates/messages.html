@@ -36,6 +36,12 @@
             </div>
             <div class="col-md-5 column">
                 <div class="panel panel-default">
+                    <div class="panel-body">
+                            <input type="checkbox" id="notify_message_posted" name="notify_message_posted"{% if notify_message_posted %} checked{% endif %}/>
+                            <label for="notify_message_posted">&nbsp;Email me when someone posts a new message</label>
+                    </div>
+                </div>
+                <div class="panel panel-default">
                     <div class="panel-heading">
                         <span class="glyphicon glyphicon-comment"></span>
                         Post a message
@@ -68,6 +74,20 @@
                 $(this).children().eq(1).children().eq(2).addClass("invisible");
             }
         );
+
+        // when user clicks to subscribe to notifications
+        $("#notify_message_posted").change(function(e) {
+            var self = this;
+            $.ajax({
+                type: "POST",
+                url: "/profile/notifications/update",
+                data: $(this).is(':checked') ? $(this).attr('name') : '',
+                success: function() {
+                    var $success_text = $("<span style='display: none; color: green; margin-left: 5px'>Updated!</span>");
+                    $success_text.appendTo($(self).parent()).show().fadeOut(2000);
+                }
+            });
+        });
 
     });
 </script>

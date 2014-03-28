@@ -10,10 +10,11 @@ from google.appengine.ext import blobstore
 from google.appengine.ext import ndb
 from google.appengine.api import xmpp
 
-from app.models import Member, Message, InstagramUser, FacebookUser, Photo, ChatSubscriber, ChatMessage
+from app.models import Member, Profile, Message, InstagramUser, FacebookUser, Photo, ChatSubscriber, ChatMessage
 from app.forms import MessageForm, MemberProfileForm, ChangePasswordForm
 from app.facebook import Facebook
 from config import configure_app
+from google.appengine.api import mail
 
 
 app = Flask(__name__.split('.')[0])
@@ -183,7 +184,7 @@ def messages():
     ancestor_key = ndb.Key('MessageBoard', 'main')  # ('MessageBoard', 'main') is the parent of all messages
                                                     # Thus, this puts all messages into a single entity group
     messages = Message.query(ancestor=ancestor_key).order(-Message.posted_date)
-    return render_template('messages.html', form=form, messages=messages)
+    return render_template('messages.html', form=form, messages=messages, notify_message_posted=g.member.profile.notify_message_posted)
 
 
 @app.route('/message/new', methods=['POST'])
@@ -194,6 +195,24 @@ def message_new():
         ancestor_key = ndb.Key('MessageBoard', 'main')
         message = Message(parent=ancestor_key, owner_key=g.member.key, body=form.body.data, posted_date=datetime.datetime.now())
         message.put()
+
+        # Send notification emails to everyone subscribed
+        photo_url = g.member.profile.photo_url
+        html_body = render_template('email/new_message_posted.html', **dict(
+            author=g.member.first_name,
+            posted_date=datetime.datetime.now().strftime('%A, %B %-d, %Y at %I:%M %p'),
+            image='%s=s60' % photo_url if photo_url else url_for('static', filename='images/male_bust.jpg', _external=True),
+            message_body=message.body,
+        ))
+        for subscriber in Profile.query(Profile.notify_message_posted == True):
+            if subscriber.primary_email:
+                mail.send_mail(
+                    'The Ly Family <messageboard@thelyfamily.com>',
+                    subscriber.primary_email,
+                    '%s posted a new message on TheLyFamily.com' % g.member.first_name,
+                    html_body,
+                    # reply_to='messageboard@thelyfamily.com'  # TODO: this should post a message on the message board
+                )
     return redirect(url_for('messages'))
 
 

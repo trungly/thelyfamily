@@ -39,6 +39,7 @@ builtins:
 
 # Enable incoming XMPP chat services
 inbound_services:
+- mail
 - xmpp_message
 - xmpp_presence
 - xmpp_subscribe

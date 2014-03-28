@@ -1,0 +1,65 @@
+<html>
+<head>
+    <style>
+        body {
+            font-size: 14px;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        }
+
+        img {
+            vertical-align: middle;
+            border: 0;
+        }
+
+        .row {
+            width: 680px;
+            margin-left: -15px;
+            margin-right: -15px;
+            padding: 20px;
+        }
+
+        .clearfix {
+            clear: both;
+        }
+
+        .col-md-2 {
+            position: relative;
+            min-height: 1px;
+            padding-left: 15px;
+            padding-right: 15px;
+            float: left;
+            width: 20%;
+        }
+
+        .col-md-10 {
+            position: relative;
+            min-height: 1px;
+            padding-left: 15px;
+            padding-right: 15px;
+            float: left;
+            width: 70%;
+        }
+
+        .center-block {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .img-circle {
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+<div class="row clearfix">
+    <div class="col-md-2 column">
+        <img src="{{ image }}" title="{{ author }}" class="img-circle center-block" height="60" width="60">
+    </div>
+    <div class="col-md-10 column">
+        <div><strong>{{ author }} said this on <em>{{ posted_date }}</em>:</strong></div>
+        <div>{{ message_body }}</div>
+    </div>
+</div>
+</body>
+</html>
