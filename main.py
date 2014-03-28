@@ -213,7 +213,7 @@ def message_new():
         for subscriber in Profile.query(Profile.notify_message_posted == True):
             if subscriber.primary_email:
                 mail.send_mail(
-                    'The Ly Family <messageboard@thelyfamily.com>',
+                    'The Ly Family <admin@thelyfamily.com>',
                     subscriber.primary_email,
                     '%s posted a new message on TheLyFamily.com' % g.member.first_name,
                     '%s wrote this on %s: %s' % (author, posted_date, message.body),
