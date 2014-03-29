@@ -23,7 +23,7 @@
                     </div>
                     <div class="col-md-10 column">
                         <div><strong>{{ message.owner.first_name or message.owner.profile.primary_email or 'Someone' }} said this <em>{{ message.humanized_posted_date }}</em>:</strong></div>
-                        <div>{{ message.body }}</div>
+                        <div>{{ message.body_formatted|safe }}</div>
                         <div class="pull-right invisible">
                             <form method="post" action="/message/{{ message.key.id() }}">
                                 <button type="submit" class="btn btn-link">Delete</button>
@@ -48,6 +48,7 @@
                         <form class="form-horizontal" method="post" action="/message/new" role="form">
                             {{ form.hidden_tag() }}
                             <textarea class="form-control" name="body" rows="4"></textarea>
+                            <span>You can format your text with <a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Here-Cheatsheet" target="_blank">Markdown</a></span>
                             <button type="submit" class="btn btn-primary btn-padding pull-right">Submit</button>
                         </form>
                     </div>

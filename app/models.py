@@ -5,6 +5,7 @@ from google.appengine.api import images
 from app.utils import pretty_date
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.facebook import Facebook
+from markdown2 import markdown
 
 
 class Member(ndb.Model):
@@ -105,6 +106,7 @@ class Message(ndb.Model):
 
     owner_key = ndb.KeyProperty(kind=Member)
     body = ndb.TextProperty()
+    body_formatted = ndb.ComputedProperty(lambda self: markdown(self.body))
     posted_date = ndb.DateTimeProperty()
     humanized_posted_date = ndb.ComputedProperty(lambda self: pretty_date(time=self.posted_date))
 
