@@ -7,11 +7,11 @@ def configure_app(app):
     config = app.config
 
     # First, load the main settings
-    config.from_object('config.production')
+    config.from_object('app.config.production')
 
     # Next, if we are developing locally, load the local settings (overriding any previous settings)
     if 'localhost' in os.environ.get('SERVER_NAME'):
-        config.from_object('config.local')
+        config.from_object('app.config.local')
 
     # Lastly, set up Instagram and Facebook urls
     url = 'https://instagram.com/oauth/authorize/?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code'

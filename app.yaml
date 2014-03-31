@@ -26,7 +26,7 @@ handlers:
 # The script value is in the format <path.to.module>.<wsgi_application>
 # where <wsgi_application> is a WSGI application object.
 - url: .*  # This regex directs all routes to main.app
-  script: main.app
+  script: app.app
 
 # Enable interactive admin console -- Didn't work; couldn't deploy app
 #- url: /admin/.*
