@@ -3,5 +3,5 @@
 # in this project's server/lib directory.
 Flask==0.10.1
 Flask-WTF==0.9.5
-requests==2.2.1
+requests==2.1.0
 markdown2==2.2.1

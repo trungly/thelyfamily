@@ -245,7 +245,7 @@ def photos():
     all_photos = []
     for user in (InstagramUser.query().fetch()):
         response = requests.get(user.recent_photos_url)
-        if response.ok and response.headers['content-type'] == 'application/json':
+        if response.ok:
             current_user_photos = response.json().get('data', None)
             current_user_photos = [Photo.from_instagram_photo(p) for p in current_user_photos]
             if current_user_photos:
