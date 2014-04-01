@@ -8,6 +8,19 @@
         <p>
             This is the Ly Family Website. We hope you find it useful and informative.
         </p>
+        {% if birthday_reminders %}
+            {% for reminder in birthday_reminders %}
+                {% if reminder[1] == 0 %}
+                    <div class="alert alert-success">
+                        Today is {{ reminder[0] }}'s birthday! Try to wish this person a Happy Birthday today if you get a chance...
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        {{ reminder[0] }}'s birthday is coming up in {{ reminder[1] }} day{% if reminder[1] > 1 %}s{% endif %}.
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
         <p>
             <a class="btn btn-primary btn-large btn-padding" href="{{ url_for('messages') }}">View message board »</a>
         </p>

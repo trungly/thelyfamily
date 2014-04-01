@@ -75,7 +75,14 @@ class Profile(ndb.Model):
 
     @property
     def member(self):
-        return self.member_key.get() if self.member_key else None
+        if self.member_key:
+            return self.member_key.get()
+        else:
+            # this profile has no associated member for some reason, search all members for this profile
+            import logging
+            log = logging.getLogger(__name__)
+            log.warning('Hmm, there appears to be an un-owned profile: id=%s' % self.key.id())
+            return Member.query(Member.profile_key == self.key).get()
 
     @property
     def photo_url(self):

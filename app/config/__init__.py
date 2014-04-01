@@ -10,7 +10,7 @@ def configure_app(app):
     config.from_object('app.config.production')
 
     # Next, if we are developing locally, load the local settings (overriding any previous settings)
-    if 'localhost' in os.environ.get('SERVER_NAME'):
+    if 'localhost' in os.environ.get('SERVER_NAME', []):
         config.from_object('app.config.local')
 
     # Lastly, set up Instagram and Facebook urls

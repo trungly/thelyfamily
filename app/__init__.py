@@ -21,4 +21,5 @@ def requires_login(func):
     return decorator
 
 
+# Ensure all the views are loaded, but only AFTER app is defined, as it is used in view decorators
 import views
