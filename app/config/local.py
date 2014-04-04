@@ -1,3 +1,5 @@
+DEBUG = True
+
 HOST_NAME = 'localhost:8080'
 
 # Instagram

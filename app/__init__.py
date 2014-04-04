@@ -2,11 +2,23 @@ from functools import wraps
 
 from flask import Flask, g, flash, redirect, url_for
 from app.config import configure_app
+from werkzeug.debug import DebuggedApplication
 
 
-app = Flask(__name__.split('.')[0])
+def create_app():
+    flask_app = Flask(__name__)
 
-configure_app(app)
+    # environment-aware configuration
+    configure_app(flask_app)
+
+    # import views
+    # register_views(flask_app)
+
+    return flask_app
+
+
+app = create_app()
+app.wsgi_app = DebuggedApplication(app.wsgi_app, evalex=True)
 
 
 def requires_login(func):

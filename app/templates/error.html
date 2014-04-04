@@ -1,0 +1,22 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+    <div class="page-header">
+        <h2>{{ error.code }}
+            <small>{{ error.name }}</small>
+        </h2>
+    </div>
+    <div class="jumbotron">
+        <h1>:(</h1>
+        <h2>{{ error.message }}</h2>
+        <p>{{ error.description }}</p>
+    </div>
+    <button type="button" class="btn btn-default dropdown-toggle pull-right" data-toggle="dropdown">
+        Details <span class="caret"></span>
+    </button>
+    <div class="dropdown-menu list-group pull-right" role="menu" style="padding: 0px; border: none">
+        {% for line in error.stacktrace %}
+            <div class="list-group-item">{{ line|replace('\n', '<br>')|replace(' ', '&nbsp;')|safe }}</div>
+        {% endfor %}
+    </div>
+{% endblock body %}
