@@ -13,10 +13,13 @@ from flask import request, g, render_template, redirect, url_for, flash
 @app.route('/messages', methods=['GET'])
 @requires_login
 def messages():
+    """('MessageBoard', 'main') is the parent of all messages. Thus, this puts all messages into a single entity group
+    """
     form = MessageForm()
-    ancestor_key = ndb.Key('MessageBoard', 'main')  # ('MessageBoard', 'main') is the parent of all messages
-    # Thus, this puts all messages into a single entity group
+    ancestor_key = ndb.Key('MessageBoard', 'main')
     messages = Message.query(ancestor=ancestor_key).order(-Message.posted_date)
+    g.member.message_board_visited = datetime.datetime.now()
+    g.member.put()
     return render_template('messages.html', form=form, messages=messages,
                            notify_message_posted=g.member.profile.notify_message_posted)
 

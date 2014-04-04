@@ -52,7 +52,11 @@
                                 <a href="{{ url_for('home') }}">Home</a>
                             </li>
                             <li{% if request.endpoint == 'messages' %} class="active"{% endif %}>
-                                <a href="{{ url_for('messages') }}">Messages</a>
+                                <a href="{{ url_for('messages') }}">Messages
+                                    {% if g.member %}
+                                    <span class="badge" style="vertical-align: middle">{{ g.member.new_messages }}</span>
+                                    {% endif %}
+                                </a>
                             </li>
                             <li{% if request.endpoint == 'members' %} class="active"{% endif %}>
                                 <a href="{{ url_for('members') }}">Members</a>

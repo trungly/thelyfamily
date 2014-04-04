@@ -16,6 +16,8 @@ class Member(ndb.Model):
     is_visible = ndb.BooleanProperty(default=True)  # whether this user shows up on Members page
     is_subscribed_to_chat = ndb.BooleanProperty(default=False)
     age = ndb.ComputedProperty(lambda self: self.current_age())
+    message_board_visited = ndb.DateTimeProperty()
+    new_messages = ndb.ComputedProperty(lambda self: self.number_new_messages())
 
     profile_key = ndb.KeyProperty(kind='Profile')
     google_user_key = ndb.KeyProperty(kind='GoogleUser')
@@ -53,6 +55,10 @@ class Member(ndb.Model):
 
     def check_password(self, password):
         return check_password_hash(self.hashed_password, password)
+
+    def number_new_messages(self):
+        query = ndb.gql("SELECT __key__ FROM Message WHERE posted_date > :1", self.message_board_visited)
+        return query.count()
 
 
 class Profile(ndb.Model):
