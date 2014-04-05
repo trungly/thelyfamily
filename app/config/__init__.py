@@ -1,9 +1,7 @@
 import os
 
 
-def configure_app(app):
-    """ Set up this app
-    """
+def setup_config(app):
     config = app.config
 
     # First, load the main settings

@@ -1,7 +1,8 @@
 from functools import wraps
 
 from flask import Flask, g, flash, redirect, url_for
-from app.config import configure_app
+from app.config import setup_config
+from app.settings import setup_settings
 from werkzeug.debug import DebuggedApplication
 
 
@@ -9,10 +10,13 @@ def create_app():
     flask_app = Flask(__name__)
 
     # environment-aware configuration
-    configure_app(flask_app)
+    setup_config(flask_app)
+
+    # add settings on the template contexts
+    setup_settings(flask_app)
 
     # import views
-    # register_views(flask_app)
+    # setup_views(flask_app)
 
     return flask_app
 

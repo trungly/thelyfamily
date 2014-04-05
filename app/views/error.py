@@ -3,7 +3,7 @@ import traceback
 
 from flask import render_template
 from app import app
-from markdown2 import markdown
+
 
 ERROR_MESSAGES = {
     403: 'Tsk Tsk. You shouldn\'t be here.',
