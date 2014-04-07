@@ -51,9 +51,33 @@
     <script type="text/javascript" src="/static/js/tablesorter/jquery.tablesorter.min.js"></script>
     <script type="text/javascript" src="/static/js/tablesorter/jquery.tablesorter.widgets.min.js"></script>
     <script>
-        $(function() {
+        // add parser through the tablesorter addParser method
+        $.tablesorter.addParser({
+            // set a unique id
+            id: "month_day",
+            is: function (s) {
+                // return false so this parser is not auto detected
+                return false;
+            },
+            format: function (s) {
+                // format your data for normalization
+                result = s.split("/")
+                return result[0] + result[1];
+            },
+            // set type, either numeric or text
+            type: "numeric"
+        });
+
+        $(function () {
             $("#members-table").tablesorter({
-                sortList: [[2,1], [1,0]]
+                // column 1 is birth date
+                headers: {
+                    1: {
+                        sorter: "month_day"
+                    }
+                }, sortList: [
+                    [1, 0]
+                ]
             });
         });
     </script>
