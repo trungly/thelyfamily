@@ -59,8 +59,13 @@ class SiteSettings(object):
         for setting in settings:
             if isinstance(setting, Setting):
                 SiteSettings.set(setting.name, settings.value)
-            else:  # then assume dict
+            else:  # then assume dict with 'name' and 'value'
                 SiteSettings.set(setting['name'], setting['value'])
+
+    @staticmethod
+    def update_from_dict(settings):
+        for setting in settings:
+            SiteSettings.set(setting, settings[setting])
 
 
 def setup_settings(app):
@@ -75,7 +80,7 @@ def setup_settings(app):
         f.close()
         data['settings.initialized'] = True
         try:
-            SiteSettings.update(data)
+            SiteSettings.update_from_dict(data)
         except BadValueError, bve:
             app.logger.error('Could not load initial settings file. Check the format.')
             raise bve
