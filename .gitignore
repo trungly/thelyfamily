@@ -11,6 +11,9 @@ server/lib/*
 # IntelliJ/PyCharm
 .idea
 
+# VirtualEnv/Fish
+.venv
+
 # Configuration files that contain secret keys
 # Comment this out only for Google App Engine
 # config/*

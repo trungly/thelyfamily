@@ -1,6 +1,6 @@
 from google.appengine.ext import ndb
 
 
-class Settings(ndb.Model):
+class Setting(ndb.Model):
     name = ndb.StringProperty()
-    value = ndb.StringProperty()
+    value = ndb.GenericProperty()

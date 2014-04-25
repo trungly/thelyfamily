@@ -1,0 +1,5 @@
+site.name: The Foo Family
+messageboard.email.from: Foo Family Message Board
+messageboard.email.address: messageboard@foofamily.org
+features.wishlists: True
+features.login.firstname: False
