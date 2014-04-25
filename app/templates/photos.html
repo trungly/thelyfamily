@@ -2,15 +2,16 @@
 
 {% block body %}
     <!-- The Gallery as lightbox dialog, should be a child element of the document body -->
-    <div id="blueimp-gallery" class="blueimp-gallery blueimp-gallery-controls">
-        <div class="slides"></div>
-        <h3 class="title"></h3>
-        <a class="prev">‹</a>
-        <a class="next">›</a>
-        <a class="close">×</a>
-        <a class="play-pause"></a>
-        <ol class="indicator"></ol>
-    </div>
+{#    This was the one for the lightbox #}
+{#    <div id="blueimp-gallery" class="blueimp-gallery blueimp-gallery-controls">#}
+{#        <div class="slides"></div>#}
+{#        <h3 class="title"></h3>#}
+{#        <a class="prev">‹</a>#}
+{#        <a class="next">›</a>#}
+{#        <a class="close">×</a>#}
+{#        <a class="play-pause"></a>#}
+{#        <ol class="indicator"></ol>#}
+{#    </div>#}
 
     <div class="page-header">
         <h1>Photo feed
@@ -18,71 +19,94 @@
         </h1>
     </div>
 
-    <div class="container">
-        {% if photos %}
-        <div class="col-md-9 column">
-            <div id="links">
+    {% if photos %}
+        <div class="col-md-12 column">
+            <div id="blueimp-gallery-carousel" class="blueimp-gallery blueimp-gallery-carousel">
+                <div class="slides"></div>
+                <h3 class="title"></h3>
+                <a class="prev">‹</a>
+                <a class="next">›</a>
+                <a class="play-pause"></a>
+                <ol class="indicator"></ol>
+            </div>
+            <div id="links" style="display: none">
                 {% for photo in photos %}
-                    <div style="position: relative; display: inline-block;">
-                        <a href="{{ photo.source }}"
-                           title="{{ photo.full_name }}" data-description="This is a banana.">
-                            <img src="{{ photo.thumbnail }}" alt="{{ photo.full_name }}">
-                        </a>
-
-                        <div class="more-info">
+                    <a href="{{ photo.source }}" data-description="This is a banana.">
+                        <img src="{{ photo.thumbnail }}" alt="{{ photo.full_name }}">
+                    </a>
+{#                    <div style="position: relative; display: inline-block;">#}
+{#                        <a href="{{ photo.source }}"#}
+{#                           title="{{ photo.full_name }}" data-description="This is a banana.">#}
+{#                            <img src="{{ photo.thumbnail }}" alt="{{ photo.full_name }}">#}
+{#                        </a>#}
+{##}
+{#                        <div class="more-info">#}
                             {#                                <a href="{{ photo.link }}" target="_blank">#}
-                            <div style="float:left">☰ {{ photo.comments_count }}</div>
+{#                            <div style="float:left">☰ {{ photo.comments_count }}</div>#}
                             {#                                </a>#}
-                            <div style="float:right">♡</div>
-                            <div style="float:right">
+{#                            <div style="float:right">♡</div>#}
+{#                            <div style="float:right">#}
                                 {#                                    <a href="{{ photo.link }}" target="_blank"></a>#}
-                                {{ photo.likes_count }}
-                                &nbsp;
-                            </div>
-                            <div style="clear:both"></div>
-                        </div>
-                    </div>
+{#                                {{ photo.likes_count }}#}
+{#                                &nbsp;#}
+{#                            </div>#}
+{#                            <div style="clear:both"></div>#}
+{#                        </div>#}
+{#                    </div>#}
                 {% endfor %}
             </div>
         </div>
-        {% endif %}
-        <div class="col-md-3 column">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <span class="glyphicon glyphicon-info-sign"></span>
-                    Add your photos!
-                </div>
-                <div class="panel-body">
-                    {% if g.member.instagram_user_key %}
-                        Already connected with Instagram.  <a href="{{ url_for('instagram_disconnect') }}">Disconnect</a> or <a href="{{ config['INSTAGRAM_AUTH_URL'] }}">reconnect</a>.
-                    {% else %}
-                        Sign in with your Instagram account to grant us permission to display your most recent Instagram
-                        photos here.
-                        <a href="{{ config['INSTAGRAM_AUTH_URL'] }}" class="btn btn-primary btn-lg btn-padding"
-                           role="button">Connect With Instagram</a>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
+    {% endif %}
+    {#        <div class="col-md-3 column">#}
+    {#            <div class="panel panel-default">#}
+    {#                <div class="panel-heading">#}
+    {#                    <span class="glyphicon glyphicon-info-sign"></span>#}
+    {#                    Add your photos!#}
+    {#                </div>#}
+    {#                <div class="panel-body">#}
+    {#                    {% if g.member.instagram_user_key %}#}
+    {#                        Already connected with Instagram.#}
+    {#                        <a href="{{ url_for('instagram_disconnect') }}">Disconnect</a> or#}
+    {#                        <a href="{{ config['INSTAGRAM_AUTH_URL'] }}">reconnect</a>.#}
+    {#                    {% else %}#}
+    {#                        Sign in with your Instagram account to grant us permission to display your most recent Instagram#}
+    {#                        photos here.#}
+    {#                        <a href="{{ config['INSTAGRAM_AUTH_URL'] }}" class="btn btn-primary btn-lg btn-padding"#}
+    {#                           role="button">Connect With Instagram</a>#}
+    {#                    {% endif %}#}
+    {#                </div>#}
+    {#            </div>#}
+    {#        </div>#}
 {% endblock body %}
 
 
 {% block javascript %}
-<script src="static/js/blueimp-gallery.min.js"></script>
-<script>
-    $(function() {
+    <script src="static/js/blueimp-gallery.min.js"></script>
+    <script>
+        $(function () {
 
-        // initialize blueImp gallery
-        $("#links").click(function() {
-            event = event || window.event;
-            var target = event.target || event.srcElement,
-                    link = target.src ? target.parentNode : target,
-                    options = {index: link, event: event},
-                    links = this.getElementsByTagName('a');
-            blueimp.Gallery(links, options);
+            // initialize blueImp gallery
+{#            $("#links").click(function () {#}
+{#                event = event || window.event;#}
+{#                var target = event.target || event.srcElement,#}
+{#                        link = target.src ? target.parentNode : target,#}
+{#                        options = {index: link, event: event},#}
+{#                        links = this.getElementsByTagName('a');#}
+{#                blueimp.Gallery(links, options);#}
+{#            });#}
+
+            blueimp.Gallery(
+                    document.getElementById('links').getElementsByTagName('a'),
+                    {
+                        container: '#blueimp-gallery-carousel',
+                        carousel: true,
+                        stretchImages: true
+                    }
+            );
+
+            $("#blueimp-gallery-carousel").hover(function () {
+                $(this).toggleClass("blueimp-gallery-controls");
+            })
         });
-
-    });
-</script>
+    </script>
 {% endblock javascript %}
