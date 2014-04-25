@@ -4,7 +4,6 @@ from flask import render_template, request, jsonify
 from app.models.member import Member, Profile
 from app import app, requires_login
 from app.settings import SiteSettings
-from werkzeug.exceptions import BadRequest
 
 
 ANNOUNCE_RANGE_IN_DAYS = 14

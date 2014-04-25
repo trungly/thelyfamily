@@ -10,6 +10,9 @@ from app.models.message import Message
 from flask import request, g, render_template, redirect, url_for, flash
 
 
+SHOW_MESSAGES_TIME_DELTA = datetime.timedelta(days=30)
+
+
 @app.route('/messages', methods=['GET'])
 @requires_login
 def messages():
@@ -17,7 +20,8 @@ def messages():
     """
     form = MessageForm()
     ancestor_key = ndb.Key('MessageBoard', 'main')
-    messages = Message.query(ancestor=ancestor_key).order(-Message.posted_date)
+    cutoff_time = datetime.datetime.now() - SHOW_MESSAGES_TIME_DELTA
+    messages = Message.query(Message.posted_date > cutoff_time, ancestor=ancestor_key).order(-Message.posted_date)
     g.member.message_board_visited = datetime.datetime.now()
     g.member.put()
     return render_template('messages.html', form=form, messages=messages,
