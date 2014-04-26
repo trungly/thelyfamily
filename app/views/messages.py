@@ -7,6 +7,8 @@ from app import app, requires_login
 from app.forms import MessageForm
 from app.models.member import Profile
 from app.models.message import Message
+from app.settings import SiteSettings
+
 from flask import request, g, render_template, redirect, url_for, flash
 
 
@@ -45,7 +47,7 @@ def message_new():
         if photo_url:
             image = '%s=s60' % photo_url
         else:
-            image = 'http://www.thelyfamily.com/static/images/male_bust.jpg'
+            image = 'http://%s/static/images/male_bust.jpg' % app.config['HOST_NAME']
         html_body = render_template('email/new_message_posted.html', **dict(
             author=author,
             posted_date=posted_date,
@@ -55,12 +57,15 @@ def message_new():
         for subscriber in Profile.query(Profile.notify_message_posted == True):
             if subscriber.primary_email:
                 mail.send_mail(
-                    'The Ly Family <admin@thelyfamily.com>',
+                    '{email_from} <{email_address}>'.format(
+                        email_from=SiteSettings.get('messageboard.email.from'),
+                        email_address=SiteSettings.get('messageboard.email.address')
+                    ),
                     subscriber.primary_email,
                     '%s posted a new message on TheLyFamily.com' % g.member.first_name,
                     '%s wrote this on %s: %s' % (author, posted_date, message.body),
                     html=html_body,
-                    # reply_to='messageboard@thelyfamily.com'  # TODO: this should post a message on the message board
+                    # reply_to='%s' % SiteSettings.get('messageboard.email.replyto')  # TODO: this should post a message on the message board
                 )
     return redirect(url_for('messages'))
 

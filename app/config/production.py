@@ -1,5 +1,8 @@
 TRAP_HTTP_EXCEPTIONS = True
 
+# This can be anything. You can use this:
+# >>> import os
+# >>> os.urandom(24)
 SECRET_KEY = '\xe90\xa0K`\xe0\x19\xdezu/\xc6\x81\xc3\xc1\xe3\xe7\xc5\xdbx\xe1\x9a\xebm'
 
 HOST_NAME = 'thelyfamily.com'
