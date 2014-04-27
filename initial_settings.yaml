@@ -1,9 +1,11 @@
-site.name: The Foo Family
-host.name: www.foofamily.com
+# TODO: When ready to go live with making this a generic app; blank out all my specific (to me) settings"
+
+site.name: The Ly Family
+host.name: www.thelyfamily.com
 secret.key: \xe90\xa0K`\xe0\x19\xdezu/\xc6\x81\xc3\xc1\xe3\xe7\xc5\xdbx\xe1\x9a\xebm
 
-messageboard.email.from: Foo Family Message Board
-messageboard.email.address: messageboard@foofamily.org
+messageboard.email.from: The Ly Family
+messageboard.email.address: admin@thelyfamily.com
 
 features.wishlists: True
 features.login.firstname: False
