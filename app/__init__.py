@@ -9,11 +9,11 @@ from werkzeug.debug import DebuggedApplication
 def create_app():
     flask_app = Flask(__name__)
 
+    # load site settings from the database
+    setup_settings(flask_app)
+
     # environment-aware configuration
     setup_config(flask_app)
-
-    # add settings on the template contexts
-    setup_settings(flask_app)
 
     # import views
     # setup_views(flask_app)

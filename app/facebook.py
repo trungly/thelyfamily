@@ -1,4 +1,4 @@
-from flask import current_app
+from app.settings import SiteSettings
 
 
 class Facebook(object):
@@ -6,9 +6,9 @@ class Facebook(object):
     @staticmethod
     def access_token_url(code):
         url = 'https://graph.facebook.com/oauth/access_token?client_id={app_id}&redirect_uri={redirect_uri}&client_secret={app_secret}&code={code}'.format(
-            app_id=current_app.config['FACEBOOK_APP_ID'],
-            redirect_uri='http://%s/facebook/return' % current_app.config['HOST_NAME'],
-            app_secret=current_app.config['FACEBOOK_APP_SECRET'],
+            app_id=SiteSettings.get('facebook.app.id'),
+            redirect_uri='http://%s/facebook/return' % SiteSettings.get('host.name'),
+            app_secret=SiteSettings.get('facebook.app.secret'),
             code=code
         )
         return url
@@ -23,7 +23,7 @@ class Facebook(object):
         """
         url = 'https://graph.facebook.com/debug_token?input_token={input_token}&access_token={access_token}'.format(
             input_token=access_token,
-            access_token=current_app.config['FACEBOOK_ACCESS_TOKEN']
+            access_token=SiteSettings.get('facebook.access.token')
         )
         return url
 

@@ -11,6 +11,7 @@ from app.views.main import app
 from app.models.photo import Photo
 from app.models.instagram import InstagramUser
 from app.models.facebook import FacebookUser
+from app.settings import SiteSettings
 
 
 @app.route('/profile/photo', methods=['POST'])
@@ -61,8 +62,8 @@ def photos():
 def instagram_return():
     """ handle return from Instagram Authentication
     """
-    client_id = current_app.config['INSTAGRAM_CLIENT_ID']
-    client_secret = current_app.config['INSTAGRAM_CLIENT_SECRET']
+    client_id = SiteSettings.get('instagram.client.id')
+    client_secret = SiteSettings.get('instagram.client.secret')
 
     code = request.args.get('code', None)
     error = request.args.get('error', None)
@@ -76,7 +77,7 @@ def instagram_return():
             'client_id': client_id,
             'client_secret': client_secret,
             'grant_type': 'authorization_code',
-            'redirect_uri': 'http://%s/photos/return' % current_app.config['HOST_NAME'],
+            'redirect_uri': 'http://%s/photos/return' % SiteSettings.get('host.name'),
             'code': code,
         }
         response = requests.post(url, data=payload)

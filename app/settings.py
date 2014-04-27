@@ -1,5 +1,6 @@
 from app.models.settings import Setting
 from google.appengine.api.datastore_errors import BadValueError
+from flask import current_app
 
 
 class SiteSettings(object):
@@ -77,6 +78,9 @@ def setup_settings(app):
         f = open('initial_settings.yaml')
         # use safe_load instead load
         data = yaml.safe_load(f)
+        local_settings = data.pop('local.settings')
+        if local_settings and isinstance(local_settings, dict):
+            data.update(local_settings)
         f.close()
         data['settings.initialized'] = True
         try:

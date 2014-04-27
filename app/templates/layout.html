@@ -146,9 +146,9 @@
 </div>
 
 <!-- JavaScript -->
-<script src="static/js/modernizr-2.6.2-respond-1.1.0.min.js"></script>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-<script src="static/js/bootstrap.js"></script>
+<script src="{{ url_for('static', filename='js/modernizr-2.6.2-respond-1.1.0.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/jquery-1.10.2.js') }}"></script>
+<script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
 
 {% block javascript %}{% endblock javascript %}
 

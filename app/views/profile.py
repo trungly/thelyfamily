@@ -5,6 +5,7 @@ from werkzeug.exceptions import Unauthorized, BadRequest
 from app.forms import ChangePasswordForm, MemberProfileForm
 from flask import g, url_for, render_template, request, flash, redirect
 from app.views.main import app
+from app.settings import SiteSettings
 
 
 @app.route('/profile', methods=['GET'])
@@ -20,11 +21,25 @@ def _render_profile(form):
     form.last_name.data = g.member.last_name
     photo_upload_url = blobstore.create_upload_url(url_for('profile_photo'))
     profile_photo_url = g.member.profile.photo_url
+    instagram_auth_url = 'https://instagram.com/oauth/authorize/?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code'
+    instagram_auth_url = instagram_auth_url.format(
+        client_id=SiteSettings.get('instagram.client.id'),
+        redirect_uri='http://%s/photos/return' % SiteSettings.get('host.name'),
+    )
+    facebook_auth_url = 'https://www.facebook.com/dialog/oauth?client_id={app_id}&redirect_uri={redirect_uri}&scope={scope}'
+    facebook_auth_url = facebook_auth_url.format(
+        app_id=SiteSettings.get('facebook.app.id'),
+        redirect_uri='http://%s/facebook/return' % SiteSettings.get('host.name'),
+        scope='user_photos'
+    )
+
     context = {
         'form': form,
         'password_form': ChangePasswordForm(),
         'photo_upload_url': photo_upload_url,
         'profile_photo_url': profile_photo_url,
+        'instagram_auth_url': instagram_auth_url,
+        'facebook_auth_url': facebook_auth_url,
     }
     return render_template('profile.html', **context)
 

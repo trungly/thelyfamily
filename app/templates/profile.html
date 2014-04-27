@@ -228,7 +228,7 @@
             resizeHandle: false,
             onChange: function(element, checked) {
                 if (checked) {
-                    window.location = "{{ config['FACEBOOK_AUTH_URL']|safe }}";
+                    window.location = "{{ facebook_auth_url|safe }}";
                 } else {
                     window.location = "{{ url_for('facebook_disconnect') }}";
                 }
@@ -243,7 +243,7 @@
             resizeHandle: false,
             onChange: function(element, checked) {
                 if (checked) {
-                    window.location = "{{ config['INSTAGRAM_AUTH_URL'] }}";
+                    window.location = "{{ instagram_auth_url }}";
                 } else {
                     window.location = "{{ url_for('instagram_disconnect') }}";
                 }

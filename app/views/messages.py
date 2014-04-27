@@ -47,7 +47,7 @@ def message_new():
         if photo_url:
             image = '%s=s60' % photo_url
         else:
-            image = 'http://%s/static/images/male_bust.jpg' % app.config['HOST_NAME']
+            image = 'http://%s/static/images/male_bust.jpg' % SiteSettings.get('host.name')
         html_body = render_template('email/new_message_posted.html', **dict(
             author=author,
             posted_date=posted_date,
