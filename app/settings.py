@@ -1,6 +1,5 @@
 from app.models.settings import Setting
 from google.appengine.api.datastore_errors import BadValueError
-from flask import current_app
 
 
 class SiteSettings(object):

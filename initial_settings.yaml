@@ -14,6 +14,8 @@ instagram.client.id: fa6e5a2ef09d41ef94433fb2379d672b
 instagram.client.secret: 6c561122b3654749ae9e77b2a569ece5
 facebook.app.id: 434962266536461
 facebook.app.secret: 0c5e486681620e90babf6fd9550dd97d
+# To get access_token, go here:
+# https://graph.facebook.com/oauth/access_token?client_id={client.id}&client_secret={client.secret}&grant_type=client_credentials
 facebook.access.token: 434962266536461|NJ6i3pl4Cowa14_ah6WvuOOTFrY
 
 
