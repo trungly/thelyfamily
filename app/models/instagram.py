@@ -1,7 +1,8 @@
 from google.appengine.ext import ndb
+from app.models import JsonSerializable
 
 
-class InstagramUser(ndb.Model):
+class InstagramUser(ndb.Model, JsonSerializable):
     """ Represents an Instagram user including their current access_token """
 
     userid = ndb.StringProperty()

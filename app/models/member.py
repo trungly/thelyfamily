@@ -1,12 +1,15 @@
 import datetime
+
 from google.appengine.api import images
 from google.appengine.ext import ndb
+
+from app.models import JsonSerializable
 from app.models.instagram import InstagramUser
 from app.models.facebook import FacebookUser
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
-class Member(ndb.Model):
+class Member(ndb.Model, JsonSerializable):
     """ Represents a user of this website """
 
     first_name = ndb.StringProperty(required=True)  # should be unique (as we use it for login)
@@ -61,7 +64,7 @@ class Member(ndb.Model):
         return query.count()
 
 
-class Profile(ndb.Model):
+class Profile(ndb.Model, JsonSerializable):
     """ Represents a member's profile. There is a one to one relationship between Member and Profile """
 
     member_key = ndb.KeyProperty(kind=Member)

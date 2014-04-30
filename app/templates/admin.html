@@ -13,9 +13,8 @@
 
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
-{#    <link rel="stylesheet" href="/static/css/main.css">#}
+    {#    <link rel="stylesheet" href="/static/css/main.css">#}
 </head>
-
 
 <body>
 
@@ -36,19 +35,21 @@
                 </a></li>
                 <li><a href="#customization" data-toggle="pill">
                     <h4>Customize Site</h4>
+
                     <p class="small"><em>Customize the look of your site</em></p>
                 </a></li>
-                <li><a href="#manage-users" data-toggle="pill">
-                    <h4>Manage Users</h4>
+                <li><a href="#manage-members" data-toggle="pill">
+                    <h4>Manage Site Members</h4>
+
                     <p class="small"><em>Manage and add new users</em></p>
                 </a></li>
             </ul>
         </div>
     </div>
     <div class="col-md-9">
-        <div class="tab-content" ng-controller="AdminSettingsController">
+        <div class="tab-content">
             <div class="tab-pane active" id="basic">
-                <div class="panel panel-default">
+                <div class="panel panel-default" ng-controller="BasicSettingsController">
                     <div class="panel-heading">
                         <h2 class="panel-title">Basic Settings</h2>
                     </div>
@@ -57,8 +58,9 @@
                         <form ng-submit="updateSettings()" role="form">
                             <div class="col-md-6 column" ng-repeat="setting in settings">
                                 {% raw %}
-                                    <label for="{{ setting.name }}">{{ setting.name }}</label>
-                                    <input type="text" class="form-control" name="{{ setting.name }}" ng-model="setting.value" value="{{ setting.value }}"/>
+                                <label for="{{ setting.name }}">{{ setting.name }}</label>
+                                <input type="text" class="form-control" name="{{ setting.name }}"
+                                       ng-model="setting.value" value="{{ setting.value }}"/>
                                 {% endraw %}
                             </div>
                             <button type="submit" class="btn btn-primary btn-padding">Save</button>
@@ -69,8 +71,32 @@
             <div class="tab-pane" id="customization">
                 Customizations
             </div>
-            <div class="tab-pane" id="manage-users">
-                Manage Users
+            <div class="tab-pane" id="manage-members" ng-controller="MemberManagementController">
+                <button type="button" class="btn btn-primary" ng-click="toggleSelectAll()">{% raw %}{{ selectText }}{% endraw %}</button>
+                <button type="button" class="btn btn-primary" ng-class="{disabled: noneActive()}">Delete</button>
+                <button type="button" class="btn btn-primary pull-right">Add New User</button>
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Last sign in</th>
+                        <th>Instagram</th>
+                        <th>Facebook</th>
+                        <th>Messageboard Notification</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="member in members" ng-click="toggleActive()" ng-class="{info: member.active}">
+                        {% raw %}
+                        <td>{{ member.first_name }} {{ member.last_name }}</td>
+                        <td>{{ member.message_board_visited }}</td>
+                        <td><input type="checkbox" disabled="disabled"/></td>
+                        <td><input type="checkbox" disabled="disabled"/></td>
+                        <td><input type="checkbox" disabled="disabled"/></td>
+                        {% endraw %}
+                    </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -81,20 +107,47 @@
 <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
 <script src="{{ url_for('static', filename='js/angular.js') }}"></script>
 <script src="{{ url_for('static', filename='js/angular-animate.js') }}"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js"></script>
 {#<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>#}
 {#<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.14/angular.js"></script>#}
 {#<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.14/angular-animate.js"></script>#}
 <script>
     var adminSettingsApp = angular.module('AdminSettingsApp', []);
 
-    adminSettingsApp.controller('AdminSettingsController', function ($scope, $http) {
-        $http.get('/admin/settings').success(function(data) {
+    adminSettingsApp.controller('BasicSettingsController', function ($scope, $http) {
+        $http.get('/admin/settings').success(function (data) {
             $scope.settings = data.settings;
         });
 
         $scope.updateSettings = function () {
             $http.post('/admin/settings/update', {'settings': $scope.settings}).success(function (data) {
             });
+        }
+    });
+
+    adminSettingsApp.controller('MemberManagementController', function ($scope, $http) {
+        $scope.selectText = 'Select All';
+        $scope.members = {{ members_bootstrap_string|safe }};
+        $scope.toggleActive = function () {
+            this.member.active = this.member.hasOwnProperty('active') && this.member.active ? false : true;
+        }
+        $scope.noneActive = function () {
+            return !_.some($scope.members, function (m) {
+                return m.active;
+            });
+        }
+        $scope.toggleSelectAll = function () {
+            if ($scope.selectText === 'Select All') {
+                _.each($scope.members, function (m) {
+                    m.active = true;
+                });
+                $scope.selectText = 'Unselect All';
+            } else {
+                _.each($scope.members, function (m) {
+                    m.active = false;
+                });
+                $scope.selectText = 'Select All';
+            }
         }
     });
 </script>
