@@ -1,5 +1,5 @@
 from google.appengine.ext import ndb
-from app.utils import pretty_date
+from family.utils import pretty_date
 
 
 class ChatSubscriber(ndb.Model):

@@ -1,7 +1,7 @@
-from google.appengine.ext import ndb
-from app.models.member import Member
-from app.utils import pretty_date
 from markdown2 import markdown
+from google.appengine.ext import ndb
+from family.models.member import Member
+from family.utils import pretty_date
 
 
 class Message(ndb.Model):

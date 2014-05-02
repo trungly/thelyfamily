@@ -1,5 +1,5 @@
 from google.appengine.ext import ndb
-from app.facebook import Facebook
+from family.facebook import Facebook
 
 
 class FacebookUser(ndb.Model):

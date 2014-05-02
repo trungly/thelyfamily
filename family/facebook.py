@@ -1,4 +1,4 @@
-from app.settings import SiteSettings
+from family.settings import SiteSettings
 
 
 class Facebook(object):
@@ -6,9 +6,9 @@ class Facebook(object):
     @staticmethod
     def access_token_url(code):
         url = 'https://graph.facebook.com/oauth/access_token?client_id={app_id}&redirect_uri={redirect_uri}&client_secret={app_secret}&code={code}'.format(
-            app_id=SiteSettings.get('facebook.app.id'),
+            app_id=SiteSettings.get('facebook.lyfam.id'),
             redirect_uri='http://%s/facebook/return' % SiteSettings.get('host.name'),
-            app_secret=SiteSettings.get('facebook.app.secret'),
+            app_secret=SiteSettings.get('facebook.lyfam.secret'),
             code=code
         )
         return url
@@ -18,7 +18,7 @@ class Facebook(object):
         """ Facebook's auth API's are really confusing. This one is called 'Inspect access tokens' in the docs:
         https://developers.facebook.com/docs/facebook-login/manually-build-a-login-flow/#confirm
         In this one, input_token is the token you're inspecting (which was the user's access_token previously).
-        And here, access_token is the app's access token.
+        And here, access_token is the lyfam's access token.
         We're mainly using it to get to the user's userid in order to store in the database
         """
         url = 'https://graph.facebook.com/debug_token?input_token={input_token}&access_token={access_token}'.format(

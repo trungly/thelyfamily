@@ -1,6 +1,6 @@
-from app import requires_login
 from flask import render_template
-from app.views.main import app
+from family.decorators import requires_login
+from family import app
 
 
 @app.route('/wishlists')

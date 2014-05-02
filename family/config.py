@@ -1,5 +1,6 @@
 import os
-from app.settings import SiteSettings
+
+from family.settings import SiteSettings
 
 
 def setup_config(app):

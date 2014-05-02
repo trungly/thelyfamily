@@ -2,7 +2,7 @@ import sys
 import traceback
 
 from flask import render_template
-from app import app
+from family import app
 
 
 ERROR_MESSAGES = {

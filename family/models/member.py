@@ -3,9 +3,9 @@ import datetime
 from google.appengine.api import images
 from google.appengine.ext import ndb
 
-from app.models import JsonSerializable
-from app.models.instagram import InstagramUser
-from app.models.facebook import FacebookUser
+from family.models import JsonSerializable
+from family.models.instagram import InstagramUser
+from family.models.facebook import FacebookUser
 from werkzeug.security import generate_password_hash, check_password_hash
 
 

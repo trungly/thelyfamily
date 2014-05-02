@@ -1,11 +1,10 @@
 from google.appengine.ext import ndb
-
-from app.forms import ChangePasswordForm
-
-from app.models.member import Member
-from flask import session, g, redirect, url_for, request, jsonify
-from app import app, requires_login
 from werkzeug.exceptions import BadRequest, Unauthorized
+from flask import session, g, redirect, url_for, request, jsonify
+from family.forms import ChangePasswordForm
+from family.models.member import Member
+from family.decorators import requires_login
+from family import app
 
 
 @app.before_request

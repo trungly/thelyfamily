@@ -1,10 +1,9 @@
-from app.models.member import Profile
 from flask_wtf import Form
 from wtforms.ext.appengine.ndb import model_form
 from wtforms.fields import StringField, HiddenField, PasswordField
 from wtforms import validators
-
-from app.models.message import Message
+from family.models.member import Profile
+from family.models.message import Message
 
 
 BaseProfileForm = model_form(Profile, Form, field_args={

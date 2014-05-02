@@ -1,17 +1,16 @@
 import cgi
 import datetime
+import requests
 
 from google.appengine.ext import blobstore
-
-from app import requires_login
-import requests
-from app.facebook import Facebook
-from flask import request, g, redirect, url_for, current_app, flash, render_template
-from app.views.main import app
-from app.models.photo import Photo
-from app.models.instagram import InstagramUser
-from app.models.facebook import FacebookUser
-from app.settings import SiteSettings
+from flask import request, g, redirect, url_for, flash, render_template
+from family import app
+from family.decorators import requires_login
+from family.facebook import Facebook
+from family.models.photo import Photo
+from family.models.instagram import InstagramUser
+from family.models.facebook import FacebookUser
+from family.settings import SiteSettings
 
 
 @app.route('/profile/photo', methods=['POST'])

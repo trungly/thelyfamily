@@ -2,16 +2,16 @@ import datetime
 
 from google.appengine.api import xmpp
 from google.appengine.ext import ndb
-
-from app.models.chat import ChatSubscriber, ChatMessage
-from flask import request, render_template, jsonify, g
-from app import app, requires_login
 from werkzeug.exceptions import NotFound
+from flask import request, render_template, jsonify, g
+from family.decorators import requires_login
+from family.models.chat import ChatSubscriber, ChatMessage
+from family import app
 
 
 """
 TODO:
-Consider sending a (self) presence message to all chat subscribers when the app starts up, and
+Consider sending a (self) presence message to all chat subscribers when the lyfam starts up, and
 on a shutdown hook, send a presence of unavailable
 """
 

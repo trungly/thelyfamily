@@ -1,11 +1,10 @@
 from google.appengine.ext import blobstore
-from app import requires_login
-
 from werkzeug.exceptions import Unauthorized, BadRequest
-from app.forms import ChangePasswordForm, MemberProfileForm
 from flask import g, url_for, render_template, request, flash, redirect
-from app.views.main import app
-from app.settings import SiteSettings
+from family.decorators import requires_login
+from family.forms import ChangePasswordForm, MemberProfileForm
+from family.settings import SiteSettings
+from family import app
 
 
 @app.route('/profile', methods=['GET'])
@@ -28,7 +27,7 @@ def _render_profile(form):
     )
     facebook_auth_url = 'https://www.facebook.com/dialog/oauth?client_id={app_id}&redirect_uri={redirect_uri}&scope={scope}'
     facebook_auth_url = facebook_auth_url.format(
-        app_id=SiteSettings.get('facebook.app.id'),
+        app_id=SiteSettings.get('facebook.lyfam.id'),
         redirect_uri='http://%s/facebook/return' % SiteSettings.get('host.name'),
         scope='user_photos'
     )

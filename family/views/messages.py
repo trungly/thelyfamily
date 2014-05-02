@@ -2,14 +2,13 @@ import datetime
 
 from google.appengine.api import mail
 from google.appengine.ext import ndb
-
-from app import app, requires_login
-from app.forms import MessageForm
-from app.models.member import Profile
-from app.models.message import Message
-from app.settings import SiteSettings
-
 from flask import request, g, render_template, redirect, url_for, flash
+from family import app
+from family.decorators import requires_login
+from family.forms import MessageForm
+from family.models.member import Profile
+from family.models.message import Message
+from family.settings import SiteSettings
 
 
 SHOW_MESSAGES_TIME_DELTA = datetime.timedelta(days=30)

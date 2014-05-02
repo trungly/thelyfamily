@@ -1,8 +1,8 @@
 from datetime import date
-
 from flask import render_template
-from app.models.member import Member, Profile
-from app import app, requires_login
+from family.decorators import requires_login
+from family.models.member import Member, Profile
+from family import app
 
 
 ANNOUNCE_RANGE_IN_DAYS = 14

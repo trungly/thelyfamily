@@ -1,5 +1,5 @@
 from google.appengine.ext import ndb
-from app.models import JsonSerializable
+from family.models import JsonSerializable
 
 
 class InstagramUser(ndb.Model, JsonSerializable):

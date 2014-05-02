@@ -1,7 +1,8 @@
-from app import app, requires_login
-from app.settings import SiteSettings
-from app.models.member import Member
 from flask import render_template, jsonify, request
+from family import app
+from family.decorators import requires_login
+from family.settings import SiteSettings
+from family.models.member import Member
 
 
 @app.route('/admin', methods=['GET'])
