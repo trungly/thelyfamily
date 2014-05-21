@@ -118,7 +118,6 @@
         $http.get('/admin/settings').success(function (data) {
             $scope.settings = data.settings;
         });
-
         $scope.updateSettings = function () {
             $http.post('/admin/settings/update', {'settings': $scope.settings}).success(function (data) {
             });
@@ -127,7 +126,9 @@
 
     adminSettingsApp.controller('MemberManagementController', function ($scope, $http) {
         $scope.selectText = 'Select All';
-        $scope.members = {{ members_bootstrap_string|safe }};
+        $http.get('/admin/members').success(function (data) {
+            $scope.members = data.members;
+        });
         $scope.toggleActive = function () {
             this.member.active = this.member.hasOwnProperty('active') && this.member.active ? false : true;
         }
