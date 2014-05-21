@@ -36,6 +36,7 @@ handlers:
 # Enable remote shell access. Run this: remote_api_shell.py the-ly-family
 builtins:
 - remote_api: on
+#- appstats: on
 
 # Enable incoming XMPP chat services
 inbound_services:
