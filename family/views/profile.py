@@ -1,9 +1,8 @@
 from google.appengine.ext import blobstore
 from werkzeug.exceptions import Unauthorized, BadRequest
-from flask import g, url_for, render_template, request, flash, redirect
+from flask import current_app, g, url_for, render_template, request, flash, redirect
 from family.decorators import requires_login
 from family.forms import ChangePasswordForm, MemberProfileForm
-from family.settings import SiteSettings
 from family import app
 
 
@@ -22,13 +21,13 @@ def _render_profile(form):
     profile_photo_url = g.member.profile.photo_url
     instagram_auth_url = 'https://instagram.com/oauth/authorize/?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code'
     instagram_auth_url = instagram_auth_url.format(
-        client_id=SiteSettings.get('instagram.client.id'),
-        redirect_uri='http://%s/photos/return' % SiteSettings.get('host.name'),
+        client_id=current_app.settings.get('instagram.client.id'),
+        redirect_uri='http://%s/photos/return' % current_app.settings.get('host.name'),
     )
     facebook_auth_url = 'https://www.facebook.com/dialog/oauth?client_id={app_id}&redirect_uri={redirect_uri}&scope={scope}'
     facebook_auth_url = facebook_auth_url.format(
-        app_id=SiteSettings.get('facebook.lyfam.id'),
-        redirect_uri='http://%s/facebook/return' % SiteSettings.get('host.name'),
+        app_id=current_app.settings.get('facebook.app.id'),
+        redirect_uri='http://%s/facebook/return' % current_app.settings.get('host.name'),
         scope='user_photos'
     )
 

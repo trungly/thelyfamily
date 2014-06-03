@@ -3,14 +3,13 @@ import datetime
 import requests
 
 from google.appengine.ext import blobstore
-from flask import request, g, redirect, url_for, flash, render_template
+from flask import current_app, request, g, redirect, url_for, flash, render_template
 from family import app
 from family.decorators import requires_login
 from family.facebook import Facebook
 from family.models.photo import Photo
 from family.models.instagram import InstagramUser
 from family.models.facebook import FacebookUser
-from family.settings import SiteSettings
 
 
 @app.route('/profile/photo', methods=['POST'])
@@ -61,8 +60,8 @@ def photos():
 def instagram_return():
     """ handle return from Instagram Authentication
     """
-    client_id = SiteSettings.get('instagram.client.id')
-    client_secret = SiteSettings.get('instagram.client.secret')
+    client_id = current_app.settings.get('instagram.client.id')
+    client_secret = current_app.settings.get('instagram.client.secret')
 
     code = request.args.get('code', None)
     error = request.args.get('error', None)
@@ -76,7 +75,7 @@ def instagram_return():
             'client_id': client_id,
             'client_secret': client_secret,
             'grant_type': 'authorization_code',
-            'redirect_uri': 'http://%s/photos/return' % SiteSettings.get('host.name'),
+            'redirect_uri': 'http://%s/photos/return' % current_app.settings.get('host.name'),
             'code': code,
         }
         response = requests.post(url, data=payload)
