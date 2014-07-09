@@ -54,6 +54,9 @@ def message_new():
         ))
         for subscriber in Profile.query(Profile.notify_message_posted == True):
             if subscriber.primary_email:
+                # TODO: put a try/except here, for when mail fails
+                # here is one error I got once:
+                #    DeadlineExceededError: The API call mail.Send() took too long to respond and was cancelled.
                 mail.send_mail(
                     '{email_from} <{email_address}>'.format(
                         email_from=current_app.settings.get('messageboard.email.from'),
