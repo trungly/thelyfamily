@@ -20,6 +20,7 @@
     </div>
 
     {% if photos %}
+        <a href="javascript:void(0)" class="btn" id="full-screen-link">Full Screen Mode</a>
         <div class="col-md-12 column">
             <div id="blueimp-gallery-carousel" class="blueimp-gallery blueimp-gallery-carousel">
                 <div class="slides"></div>
@@ -75,7 +76,7 @@
 {#                blueimp.Gallery(links, options);#}
 {#            });#}
 
-            blueimp.Gallery(
+            var gallery = blueimp.Gallery(
                     document.getElementById('links').getElementsByTagName('a'),
                     {
                         container: '#blueimp-gallery-carousel',
@@ -87,6 +88,9 @@
             $("#blueimp-gallery-carousel").hover(function () {
                 $(this).toggleClass("blueimp-gallery-controls");
             })
+            $("#full-screen-link").click(function() {
+                gallery.requestFullScreen($("#blueimp-gallery-carousel").parent()[0]);
+            });
         });
     </script>
 {% endblock javascript %}
