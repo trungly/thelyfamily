@@ -10,7 +10,7 @@ from family.models.member import Profile
 from family.models.message import Message
 
 
-SHOW_MESSAGES_TIME_DELTA = datetime.timedelta(days=30)
+SHOW_MESSAGES_TIME_DELTA = datetime.timedelta(days=90)
 
 
 @app.route('/messages', methods=['GET'])
