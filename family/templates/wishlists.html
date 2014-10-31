@@ -7,4 +7,120 @@
         </h2>
     </div>
 
+    <div ng-app="wishlistApp" ng-controller="WishlistController" ng-init="loadMemberWishlist(); getMemberWithWishlists()">
+        <h3 class="text-primary">{% raw %}{{ wishlist_title }}{% endraw %}</h3>
+        <div class="col-md-8 column">
+            <table class="table">
+                <thead>
+                    <th>Name</th>
+                    <th>Status</th>
+                    <th>Reserved By/Locked By</th>
+                    <th>Actions</th>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="item in items">
+                        {% raw %}
+                            <td><a href="{{ item.link }}" target="_blank">{{ item.name }}</a></td>
+                            <td>{{ item.status }}</td>
+                            <td>{{ item.giver.first_name || "no one yet" }}</td>
+                            <td ng-show="is_current_member_wishlist"><a ng-click="deleteItem(item.id)">delete</a></td>
+                            <td ng-show="!is_current_member_wishlist && item.status == 'open'"><a ng-click="updateItemStatus(item.id, 'reserved')">reserve</a> / <a ng-click="updateItemStatus(item.id, 'locked')">lock</a></td>
+                            <td ng-show="!is_current_member_wishlist && item.status == 'reserved'"><a ng-click="updateItemStatus(item.id, 'open')">open</a> / <a ng-click="updateItemStatus(item.id, 'locked')">lock</a></td>
+                            <td ng-show="!is_current_member_wishlist && item.status == 'locked'"><a ng-click="updateItemStatus(item.id, 'open')">open</a> / <a ng-click="updateItemStatus(item.id, 'reserved')">unlock</a></td>
+                        {% endraw %}
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-4 column">
+            <div class="panel panel-default">
+                <div class="panel-heading"><span class="glyphicon glyphicon-list"></span> Definitions</div>
+                <div class="panel-body small">
+                    <p><strong>open</strong> - no one has reserved it yet</p>
+                    <p><strong>reserved</strong> - that person is saying that they intend to give the gift</p>
+                    <p><strong>locked</strong> - that person is saying that they already bought the gift</p>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading"><span class="glyphicon glyphicon-plus-sign"></span> Add an item to your wishlist</div>
+                <div class="panel-body">
+                    <form ng-submit="addItem()" role="form" name="addItemForm">
+                        <input type="text" class="form-control" name="name" ng-model="name" placeholder="Item"/>
+                        <input type="text" class="form-control" name="link" ng-model="link" placeholder="Link to item"/>
+                        <textarea class="form-control" name="details" ng-model="details" placeholder="Details"></textarea>
+                        <button type="submit" class="btn btn-primary pull-right">Add</button>
+                    </form>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading"><span class="glyphicon glyphicon-list-alt"></span> View someone else's wishlist</div>
+                <div class="panel-body">
+                    <ul>
+                        <li ng-repeat="member in members">
+                            {% raw %}
+                                <a href="" ng-click="loadMemberWishlist(member.id)">{{ member.first_name }}</a>
+                            {% endraw %}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
 {% endblock body %}
+
+{% block javascript %}
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.14/angular.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.14/angular-animate.js"></script>
+    <script>
+        var wishlistApp = angular.module('wishlistApp', []);
+
+        wishlistApp.controller('WishlistController', function($scope, $http, $timeout) {
+
+            $scope.loadMemberWishlist = function(id) {
+                {# if no id is passed in, load current logged in user's wishlist #}
+                id = id || "{{ g.member.key.id() }}";
+                $timeout(function() {
+                    $http.get('/wishlist/' + id).success(function(data) {
+                        $scope.items = data.items;
+                        $scope.wishlist_title = data.wishlist_title;
+                        $scope.is_current_member_wishlist = data.is_current_member_wishlist;
+                    });
+                }, 100);
+            }
+
+            $scope.getMemberWithWishlists = function() {
+                $http.get('/wishlist/members').success(function(data) {
+                    $scope.members = data.members;
+                });
+            }
+
+            $scope.addItem = function() {
+                var requestData = {
+                    name: $scope.name,
+                    link: $scope.link,
+                    details: $scope.details
+                };
+                $http.post('/wishlist', requestData).success(function(data) {
+                    $scope.loadMemberWishlist();
+                    // clear form
+                    $scope.name = "";
+                    $scope.link = "";
+                    $scope.details = "";
+                });
+            }
+
+            $scope.deleteItem = function(id) {
+                $http.delete('/wishlist/' + id).success(function(data) {
+                    $scope.loadMemberWishlist();
+                })
+            }
+
+            $scope.updateItemStatus = function(id, status) {
+                $http.put('/wishlist/' + id, {status: status}).success(function(data) {
+                    $scope.loadMemberWishlist(data.owner_id);
+                })
+            }
+        });
+    </script>
+{% endblock %}

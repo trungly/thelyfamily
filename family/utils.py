@@ -1,3 +1,8 @@
+from flask.json import JSONEncoder
+from datetime import datetime, date, time
+from google.appengine.ext import ndb
+
+
 # From: http://stackoverflow.com/questions/1551382/user-friendly-time-format-in-python
 # TODO: convert to a Jinja2 filter
 
@@ -44,3 +49,17 @@ def pretty_date(time=False):
     if day_diff < 365:
         return str(day_diff/30) + " months ago"
     return str(day_diff/365) + " years ago"
+
+
+class NDBModelJSONEncoder(JSONEncoder):
+
+    def default(self, obj):
+        if isinstance(obj, ndb.Key):
+            return obj.id()
+        elif isinstance(obj, ndb.Model):
+            # call model's to_dict() and tack on the id as well
+            return dict(obj.to_dict(), **dict(id=obj.key.id()))
+        elif isinstance(obj, (datetime, date, time)):
+            return str(obj)  # todo: make sure this is what we want
+
+        return JSONEncoder.default(self, obj)
