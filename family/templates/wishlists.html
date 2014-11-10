@@ -1,13 +1,16 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-    <div class="page-header">
+    <style>
+        .ng-cloak { visibility: hidden; }
+    </style>
+    <div class="page-header" ng-cloak class="ng-cloak">
         <h2>Wish Lists
             <small>For wishful thinkers</small>
         </h2>
     </div>
 
-    <div ng-app="wishlistApp" ng-controller="WishlistController" ng-init="loadMemberWishlist(); getMemberWithWishlists()">
+    <div ng-app="wishlistApp" ng-controller="WishlistController" ng-init="loadMemberWishlist(); getMemberWithWishlists()" ng-cloak class="ng-cloak">
         <h3 class="text-primary">{% raw %}{{ wishlist_title }}{% endraw %}</h3>
         <div class="col-md-8 column">
             <table class="table">
