@@ -23,7 +23,10 @@
                 <tbody>
                     <tr ng-repeat="item in items">
                         {% raw %}
-                            <td><a href="{{ item.link }}" target="_blank">{{ item.name }}</a></td>
+                            <td>
+                                <a ng-if="item.link" href="{{ item.link }}" target="_blank" data-toggle="popover" data-content="{{ item.details }}">{{ item.name }}</a>
+                                <span ng-if="!item.link" data-toggle="popover" data-content="{{ item.details }}">{{ item.name }}</span>
+                            </td>
                             <td>{{ item.status }}</td>
                             <td>{{ item.giver.first_name || "no one yet" }}</td>
                             <td ng-show="is_current_member_wishlist"><a ng-click="deleteItem(item.id)">delete</a></td>
@@ -32,6 +35,7 @@
                             <td ng-show="!is_current_member_wishlist && item.status == 'locked'"><a ng-click="updateItemStatus(item.id, 'open')">open</a> / <a ng-click="updateItemStatus(item.id, 'reserved')">unlock</a></td>
                         {% endraw %}
                     </tr>
+                    <tr ng-if="items.length == 0"><td colspan="4">There are no items on your wish list.  Add some! (Using the form on the right).</td></tr>
                 </tbody>
             </table>
         </div>
@@ -48,9 +52,9 @@
                 <div class="panel-heading"><span class="glyphicon glyphicon-plus-sign"></span> Add an item to your wishlist</div>
                 <div class="panel-body">
                     <form ng-submit="addItem()" role="form" name="addItemForm">
-                        <input type="text" class="form-control" name="name" ng-model="name" placeholder="Item"/>
-                        <input type="text" class="form-control" name="link" ng-model="link" placeholder="Link to item"/>
-                        <textarea class="form-control" name="details" ng-model="details" placeholder="Details"></textarea>
+                        <input type="text" class="form-control" name="name" ng-model="name" required placeholder="Item name"/>
+                        <input type="url" class="form-control" name="link" ng-model="link" placeholder="Item URL"/>
+                        <textarea class="form-control" name="details" ng-model="details" placeholder="Item details"></textarea>
                         <button type="submit" class="btn btn-primary pull-right">Add</button>
                     </form>
                 </div>
@@ -76,6 +80,8 @@
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.14/angular.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.14/angular-animate.js"></script>
     <script>
+        $("body").popover({ selector: '[data-toggle=popover]', trigger: 'hover' });
+
         var wishlistApp = angular.module('wishlistApp', []);
 
         wishlistApp.controller('WishlistController', function($scope, $http, $timeout) {

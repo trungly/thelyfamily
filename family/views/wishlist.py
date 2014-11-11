@@ -38,7 +38,7 @@ def get_member_wishlist(id):
         item_dict['id'] = item.key.id()
         serialized_items.append(item_dict)
     is_current_member_wishlist = key == g.member.key
-    wishlist_title = 'This is my wishlist :)' if is_current_member_wishlist else 'This is %s\'s wishlist' % key.get().first_name
+    wishlist_title = 'My wishlist' if is_current_member_wishlist else 'This is %s\'s wishlist' % key.get().first_name
     return jsonify({'items': serialized_items, 'wishlist_title': wishlist_title, 'is_current_member_wishlist': is_current_member_wishlist})
 
 @app.route('/wishlist/<int:id>', methods=['DELETE'])
