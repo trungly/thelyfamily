@@ -1,30 +1,29 @@
-# TODO: When ready to go live with making this a generic app; blank out all my specific (to me) settings"
+site.name: Our Family Site
+host.name: your-app-id.appspot.com
+secret.key: e.g. >>> import os; os.urandom(24)
 
-site.name: The Ly Family
-host.name: www.thelyfamily.com
-secret.key: \xe90\xa0K`\xe0\x19\xdezu/\xc6\x81\xc3\xc1\xe3\xe7\xc5\xdbx\xe1\x9a\xebm
-
-messageboard.email.from: The Ly Family
-messageboard.email.address: admin@thelyfamily.com
+messageboard.email.from: Our Family
+messageboard.email.address: admin@your-app-id.appspot.com
 
 features.wishlists: True
 features.login.firstname: False
 
-instagram.client.id: fa6e5a2ef09d41ef94433fb2379d672b
-instagram.client.secret: 6c561122b3654749ae9e77b2a569ece5
-facebook.app.id: 434962266536461
-facebook.app.secret: 0c5e486681620e90babf6fd9550dd97d
+instagram.client.id: changeme
+instagram.client.secret: changeme
+facebook.app.id: changeme
+facebook.app.secret: changeme
+
 # To get access_token, go here:
 # https://graph.facebook.com/oauth/access_token?client_id={client.id}&client_secret={client.secret}&grant_type=client_credentials
-facebook.access.token: 434962266536461|NJ6i3pl4Cowa14_ah6WvuOOTFrY
+facebook.access.token: changeme
 
 
 # In DEBUG mode, anything under local.settings overrides existing settings with the same name;
 #   when not in DEBUG mode, all local.settings are ignored
 local.settings:
   host.name: localhost:8080
-  instagram.client.id: 2dfd34760647442e879b7fd6ca1201a9
-  instagram.client.secret: 8f321a66d0c94d5c8808eff30906ddcf
-  facebook.app.id: 254341781341297
-  facebook.app.secret: aa5fd19f9925dc31919cca4675ec1246
-  facebook.access.token: 254341781341297|LI7-LXnYyQ9SeYr0XYnOzvNJBQQ
+  instagram.client.id: changeme
+  instagram.client.secret: changeme
+  facebook.app.id: changeme
+  facebook.app.secret: changeme
+  facebook.access.token: changeme

@@ -84,6 +84,9 @@ class SiteSettings(object):
                 # name-value list
                 self.set(setting['name'], setting['value'])
 
+    def as_yaml(self):
+        return {str(key): str(value) for key, value in self.get_all().iteritems()}
+
 
 def setup_settings(app):
     """ Instantiate settings object and add them to the template contexts

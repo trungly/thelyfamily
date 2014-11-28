@@ -69,6 +69,14 @@
                         </form>
                     </div>
                 </div>
+                <div class="panel panel-default" ng-controller="BasicSettingsController">
+                    <div class="panel-heading">
+                        <h2 class="panel-title">Export Settings</h2>
+                    </div>
+                    <div class="panel-body">
+                        <a href="{{ url_for('admin_export_settings') }}" class="btn btn-primary">Download</a>
+                    </div>
+                </div>
             </div>
             <div class="tab-pane" id="customization">
                 Customizations

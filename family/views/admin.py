@@ -1,4 +1,6 @@
-from flask import render_template, jsonify, request
+import yaml
+
+from flask import render_template, jsonify, request, make_response
 from family import app
 from family.decorators import requires_login
 from family.models.member import Member
@@ -38,3 +40,12 @@ def all_members():
     members = Member.query().fetch()
     serialized_members = [m.to_dict(exclude=['profile_key']) for m in members]
     return jsonify({'members': serialized_members})
+
+
+@app.route('/admin/settings/export', methods=['GET'])
+@requires_login
+def admin_export_settings():
+    settings = app.settings.as_yaml()
+    response = make_response(yaml.dump(settings, default_flow_style=False))
+    response.headers["Content-Disposition"] = "attachment; filename=settings.yaml"
+    return response
