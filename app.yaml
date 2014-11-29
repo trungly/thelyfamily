@@ -3,7 +3,7 @@
 # https://developers.google.com/appengine/docs/python/config/appconfig
 # for details.
 
-application: the-ly-family
+application: your-app-id
 version: 1
 runtime: python27
 api_version: 1
@@ -38,7 +38,7 @@ handlers:
 #  script: ${PYTHON_LIB/}google/appengine/ext/admin
 #  login: admin
 
-# Enable remote shell access. Run this: remote_api_shell.py the-ly-family
+# Enable remote shell access. Run this: remote_api_shell.py your-app-id
 builtins:
 - remote_api: on
 #- appstats: on

@@ -11,7 +11,7 @@ from family import app
 
 """
 TODO:
-Consider sending a (self) presence message to all chat subscribers when the lyfam starts up, and
+Consider sending a (self) presence message to all chat subscribers when the app starts up, and
 on a shutdown hook, send a presence of unavailable
 """
 
@@ -103,10 +103,10 @@ def xmpp_subscribed():
 @requires_login
 def chat_send():
     # 5a) We only send the message to the main site XMPP user
-    from_jid = '%s@the-ly-family.appspotchat.com' % g.member.first_name
+    from_jid = '%s@your-app-id.appspotchat.com' % g.member.first_name
     message = request.json['message']
     if message:
-        xmpp.send_message('the-lyfamily@appspot.com', message, from_jid=from_jid)
+        xmpp.send_message('your-app-id@appspot.com', message, from_jid=from_jid)
     return '', 200
 
 

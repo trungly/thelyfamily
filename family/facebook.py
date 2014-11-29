@@ -18,7 +18,7 @@ class Facebook(object):
         """ Facebook's auth API's are really confusing. This one is called 'Inspect access tokens' in the docs:
         https://developers.facebook.com/docs/facebook-login/manually-build-a-login-flow/#confirm
         In this one, input_token is the token you're inspecting (which was the user's access_token previously).
-        And here, access_token is the lyfam's access token.
+        And here, access_token is the site's access token.
         We're mainly using it to get to the user's userid in order to store in the database
         """
         url = 'https://graph.facebook.com/debug_token?input_token={input_token}&access_token={access_token}'.format(

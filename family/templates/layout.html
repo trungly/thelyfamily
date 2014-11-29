@@ -7,7 +7,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>The Ly Family</title>
+    <title>{{ settings.get('site.name') }}</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
 
@@ -43,7 +43,7 @@
                 <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span
                     class="icon-bar"></span><span class="icon-bar"></span>
             </button>
-            <span class="navbar-brand">The Ly Family</span>
+            <span class="navbar-brand">{{ settings.get('site.name') }}</span>
         </div>
         <div class="collapse navbar-collapse" style>
             <ul class="nav navbar-nav">

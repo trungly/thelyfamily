@@ -6,7 +6,7 @@
             Hello, family!
         </h1>
         <p>
-            This is the Ly Family Website. We hope you find it useful and informative.
+            This is the {{ settings.get('site.name') }}. We hope you find it useful and informative.
         </p>
         {% if birthday_reminders %}
             {% for reminder in birthday_reminders %}
