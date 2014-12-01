@@ -37,6 +37,10 @@ class SiteSettings(object):
                 app.logger.error('Could not load initial settings file. Check the format.')
                 raise bve
 
+    @property
+    def initialized(self):
+        return self.get('settings.initialized')
+
     def get(self, name):
         setting = Setting.query(Setting.name == name).fetch(1)
         if len(setting):

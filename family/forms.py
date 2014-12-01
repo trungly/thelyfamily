@@ -30,3 +30,11 @@ class ChangePasswordForm(Form):
 
 
 MessageForm = model_form(Message, Form)
+
+
+class SetupWizardForm(Form):
+    admin_first_name = StringField('Admin first name', [validators.input_required()])
+    admin_last_name = StringField('Admin last name', [validators.input_required()])
+    site_name = StringField('Site name', [validators.input_required()])
+    secret_key = StringField('Secret key', [validators.input_required()])
+    host_name = StringField('Website address', [validators.input_required()])

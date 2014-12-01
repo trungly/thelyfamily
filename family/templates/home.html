@@ -1,6 +1,11 @@
 {% extends 'layout.html' %}
 
 {% block body %}
+    {% if not settings_initialized %}
+        <div class="alert alert-warning">
+            Your site has not been set up yet. <a href="{{ url_for('setup_wizard') }}">Set it up now.</a>
+        </div>
+    {% endif %}
     <div class="jumbotron jumbotron-home">
         <h1>
             Hello, family!

@@ -1,0 +1,64 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+    <div class="page-header">
+        <h2>Setup Wizard
+            <small>Sprinkle some magic on your site</small>
+        </h2>
+    </div>
+    <div class="container">
+        <form class="form-horizontal" role="form" action="{{ url_for('setup_wizard') }}" method="post">
+            {{ form.hidden_tag() }}
+            <p class="alert alert-info"><span class="glyphicon glyphicon-info-sign"></span> You'll be the site administrator and first site member for now</p>
+            <div class="form-group">
+                <label for="admin-first-name" class="col-sm-2">Your first name:</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control col-sm-10" name="admin_first_name" placeholder="Joe" value="{{ form.admin_first_name.data }}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="admin-last-name" class="col-sm-2">Your last name:</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control col-sm-10" name="admin_last_name" placeholder="Schmoe" value="{{ form.admin_last_name.data }}">
+                </div>
+            </div>
+            <p class="alert alert-warning"><span class="glyphicon glyphicon-info-sign"></span> Your password will start off as 'admin'</p>
+            <div class="form-group">
+                <label for="site-name" class="col-sm-2">Site name:</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control col-sm-10" name="site_name" placeholder="Our Family Site" value="{{ form.site_name.data }}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="secret-key" class="col-sm-2">Secret key:</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" name="secret_key" placeholder=">>> import os; os.urandom(24)" value="{{ form.secret_key.data }}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="host-name" class="col-sm-2">Website address:</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" name="host_name" placeholder="www.schmoe-family.com" value="{{ form.host_name.data }}">
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="feature_wishlists"> Enable Wishlist feature
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox"> Enable some other feature
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+            <br>
+            <br>
+            <p class="alert alert-danger"><span class="glyphicon glyphicon-list-alt"></span> Todo: Add settings for Facebook and Instagram integrations</p>
+        </form>
+    </div>
+{% endblock body %}

@@ -16,6 +16,7 @@ class Member(ndb.Model):
     last_name = ndb.StringProperty(required=True)
     hashed_password = ndb.StringProperty(required=True)
     is_visible = ndb.BooleanProperty(default=True)  # whether this user shows up on Members page
+    is_admin = ndb.BooleanProperty(default=False)   # whether this user a site admin
     is_subscribed_to_chat = ndb.BooleanProperty(default=False)
     age = ndb.ComputedProperty(lambda self: self.current_age())
     message_board_visited = ndb.DateTimeProperty()
