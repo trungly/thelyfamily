@@ -36,6 +36,20 @@
     {% include 'includes/header.html' %}
     {% include 'includes/login.html' %}
 
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}"><span
+                            class="glyphicon glyphicon-ok"></span> {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block body %}{% endblock body %}
+    </div>
+
     <!-- JavaScript -->
     <script src="{{ url_for('static', filename='js/modernizr-2.6.2-respond-1.1.0.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/jquery-1.11.1.min.js') }}"></script>
