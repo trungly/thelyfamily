@@ -56,7 +56,7 @@
                         <h2 class="panel-title">Basic Settings</h2>
                     </div>
                     <div class="panel-body">
-                        {% from "_formhelpers.html" import form_field %}
+                        {% from "macros/form_helpers.html" import form_field %}
                         <form ng-submit="updateSettings()" role="form">
                             <div class="col-md-6 column" ng-repeat="setting in settings">
                                 {% raw %}
