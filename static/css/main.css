@@ -1,6 +1,8 @@
 body {
     margin-top: 50px;
     margin-bottom: 50px;
+    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+    font-weight: 300;
 }
 
 html {
@@ -87,4 +89,33 @@ html {
 
 .iPhoneCheckHandle {
     width: 47px;
+}
+
+.active-list {
+    list-style: none;
+    font-size: large;
+    padding: 20px;
+    border-radius: 6px;
+    background-color: #d9edf7;
+}
+
+.active-list h3 {
+    border-bottom: 1px solid black;
+    margin: 0px 0px 12px 0px;
+}
+
+.active-list .existing-items .glyphicon, .active-list .preview-item .glyphicon {
+    font-size: small;
+}
+
+.active-list .preview-item {
+    color: #aaa;
+}
+
+.active-list .new-item {
+    margin-top: 10px;
+}
+
+.active-list .list-name .glyphicon {
+    font-size: large;
 }
