@@ -1,6 +1,6 @@
 site.name: Our Family Site
 host.name: your-app-id.appspot.com
-secret.key: e.g. >>> import os; os.urandom(24)
+secret.key: 'e.g. >>> import os; os.urandom(24)'
 
 messageboard.email.from: Our Family
 messageboard.email.address: admin@your-app-id.appspot.com

@@ -91,31 +91,40 @@ html {
     width: 47px;
 }
 
-.active-list {
-    list-style: none;
-    font-size: large;
+.active-list-panel {
     padding: 20px;
-    border-radius: 6px;
-    background-color: #d9edf7;
+    border-radius: 8px;
+    border: 1px solid #999;
+    background-color: #FDFFA5;
 }
 
-.active-list h3 {
+.active-list-panel h3 {
     border-bottom: 1px solid black;
+    padding-bottom: 5px;
     margin: 0px 0px 12px 0px;
 }
 
-.active-list .existing-items .glyphicon, .active-list .preview-item .glyphicon {
+.active-list-panel .list-name .glyphicon {
+    font-size: large;
+}
+
+.active-list-items {
+    list-style: none;
+    font-size: large;
+}
+
+.active-list-items .dragged-item {
+    border: 1px dashed black;
+}
+
+.glyphicon-minus {
     font-size: small;
 }
 
-.active-list .preview-item {
+.active-list-items .preview-item {
     color: #aaa;
 }
 
-.active-list .new-item {
+.active-list-items .new-item {
     margin-top: 10px;
-}
-
-.active-list .list-name .glyphicon {
-    font-size: large;
 }

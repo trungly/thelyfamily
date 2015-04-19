@@ -1,8 +1,8 @@
 angular.module('underscore', []).factory('_', function() {
-    return window._; // assumes underscore has already been loaded on the page
+    return window._;
 });
 
-angular.module('ListsApp', ['underscore'])
+angular.module('ListsApp', ['underscore', 'ui.sortable', 'underscore'])
     .controller('ListCtrl', function($scope, _) {
         $scope.lists = [
             {
@@ -21,15 +21,20 @@ angular.module('ListsApp', ['underscore'])
 
         $scope.activeListId = null;
         $scope.setActiveList = function(id) {
-            $scope.activeListId = id;
-            // clear out newItem and focus on it
-            //$scope.newItem = '';
+            if (id !== $scope.activeListId) {
+                $scope.activeListId = id;
+                $scope.newItem = '';
+                $scope.$broadcast('newListSelected');
+            }
         };
         $scope.activeList = function() {
             var result = $scope.lists.filter(function(element) {
                 return element.id === $scope.activeListId;
             });
-            return result.length ? result[0] : null;
+            return result.length ? result[0] : {};
+        };
+        $scope.sortableOptions = {
+            additionalPlaceholderClass: 'dragged-item'
         };
 
         $scope.addItemOnEnter = function(event) {
@@ -43,8 +48,13 @@ angular.module('ListsApp', ['underscore'])
                         $scope.activeList().items = [newItem];
                     }
                 }
-                // clear out newItem
-                $scope.newItem = '';
+                // clear out the preview line
+                this.newItem = '';  // 'this' is the current child scope
+            }
+        };
+        $scope.ctrlClickDeleteItem = function(event) {
+            if (event.ctrlKey) {
+                $scope.activeList().items = _.without($scope.activeList().items, this.item);
             }
         };
 
@@ -61,17 +71,15 @@ angular.module('ListsApp', ['underscore'])
             $scope.activeListId = 0;
         }
     })
-    .directive('focusOnShow', function() {
+    .directive('focusOn', function($timeout) {
         return {
             restrict: 'A',
             link: function(scope, element, attrs) {
-                // I can't figure out why, but this doesn't work on the first time we change lists
-                var element = element;
-                scope.$watch(function() {
-                    return scope.activeListId;
-                }, function(oldValue, newValue) {
-                    element.focus();
-                    scope.newItem = '';
+                scope.$on(attrs['focusOn'], function() {
+                    $timeout(function() {  // wait till DOM renders the element
+                        element.focus();
+                        scope.newItem = '';  // clear the newItem model too
+                    })
                 });
             }
         }
