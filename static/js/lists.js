@@ -2,8 +2,12 @@ angular.module('underscore', []).factory('_', function() {
     return window._;
 });
 
-angular.module('ListsApp', ['underscore', 'ui.sortable', 'underscore'])
-    .controller('ListCtrl', function($scope, _) {
+angular.module('ListsApp', ['underscore', 'ui.sortable', 'ngResource'])
+    .factory('Lists', function($resource) {
+        return $resource('/api/lists/:id', {}, {'query': {method: 'GET', isArray: false }});
+    })
+    .controller('ListCtrl', ['$scope', 'Lists', '_', function($scope, Lists, _) {
+/*
         $scope.lists = [
             {
                 id: 1,
@@ -18,6 +22,11 @@ angular.module('ListsApp', ['underscore', 'ui.sortable', 'underscore'])
                 ]
             }
         ];
+*/
+        //$scope.lists = Lists.query();
+        Lists.query(function (resource) {
+            $scope.lists = resource.data;
+        });
 
         $scope.activeListId = null;
         $scope.setActiveList = function(id) {
@@ -28,6 +37,7 @@ angular.module('ListsApp', ['underscore', 'ui.sortable', 'underscore'])
             }
         };
         $scope.activeList = function() {
+            if (!$scope.activeListId) { return {}; }
             var result = $scope.lists.filter(function(element) {
                 return element.id === $scope.activeListId;
             });
@@ -53,7 +63,7 @@ angular.module('ListsApp', ['underscore', 'ui.sortable', 'underscore'])
             }
         };
         $scope.ctrlClickDeleteItem = function(event) {
-            if (event.ctrlKey) {
+            if (event.ctrlKey || event.metaKey) {
                 $scope.activeList().items = _.without($scope.activeList().items, this.item);
             }
         };
@@ -70,7 +80,7 @@ angular.module('ListsApp', ['underscore', 'ui.sortable', 'underscore'])
             $scope.lists = _.reject($scope.lists, function(list){ return list.id === $scope.activeListId; });
             $scope.activeListId = 0;
         }
-    })
+    }])
     .directive('focusOn', function($timeout) {
         return {
             restrict: 'A',
