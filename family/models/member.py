@@ -95,7 +95,14 @@ class Profile(ndb.Model):
 
     @property
     def photo_url(self):
-        return images.get_serving_url(str(self.photo_key)) if self.photo_key else None
+        if self.photo_key:
+            try:
+                return images.get_serving_url(str(self.photo_key))
+            except Exception, e:
+                app.logger.error('Could not load member profile photo for %s' % member_key)
+                return None
+        else:
+            return None
 
     def update_notifications(self, selections):
         all_notify_flags = ['notify_message_posted', 'notify_birthday_reminders']
