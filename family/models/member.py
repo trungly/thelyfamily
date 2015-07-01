@@ -6,6 +6,7 @@ from google.appengine.ext import ndb
 from family.models.instagram import InstagramUser
 from family.models.facebook import FacebookUser
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask import current_app
 
 
 class Member(ndb.Model):
@@ -99,7 +100,7 @@ class Profile(ndb.Model):
             try:
                 return images.get_serving_url(str(self.photo_key))
             except Exception, e:
-                app.logger.error('Could not load member profile photo for %s' % member_key)
+                current_app.logger.error('Could not load member profile photo for %s' % member_key)
                 return None
         else:
             return None
