@@ -66,7 +66,7 @@
                 </div>
                 <div class="panel panel-default">
                     <div class="panel-body">
-                        <strong>Note: </strong>The First Name field is disabled because currently this is used as your user login id.
+                        <strong>Note: </strong>The First Name field is disabled because your first name is used as your login id.
                     </div>
                 </div>
             </div>
@@ -88,7 +88,7 @@
 
                             <div class="row clearfix">
                                 <div class="col-md-6 column">
-                                    {{ form_field(form.first_name, disabled=True) }}
+                                    {{ form_field(form.first_name, readonly=True) }}
                                 </div>
                                 <div class="col-md-6 column">
                                     {{ form_field(form.last_name) }}
@@ -261,9 +261,8 @@
             }
         });
 
-        // update profile form: workaround for 'disabled' input (First Name) not being submitted
+        // submit profile form
         $("#update-profile-button").click(function(event) {
-            $("#first_name").removeAttr("disabled")
             $("#update-profile-form").submit();
         })
 
