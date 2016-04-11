@@ -6,6 +6,7 @@ from google.appengine.ext import ndb
 from family.models.instagram import InstagramUser
 from family.models.facebook import FacebookUser
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import cached_property
 from flask import current_app
 
 
@@ -28,21 +29,21 @@ class Member(ndb.Model):
     facebook_user_key = ndb.KeyProperty(kind='FacebookUser')
     instagram_user_key = ndb.KeyProperty(kind='InstagramUser')
 
-    @property
+    @cached_property
     def profile(self):
         if self.profile_key:
             return self.profile_key.get()
         else:
             return Profile.create_for_member(self)
 
-    @property
+    @cached_property
     def instagram_user(self):
         if self.instagram_user_key:
             return self.instagram_user_key.get()
         else:
             return InstagramUser.create_for_member(self)
 
-    @property
+    @cached_property
     def facebook_user(self):
         if self.facebook_user_key:
             return self.facebook_user_key.get()
@@ -83,7 +84,7 @@ class Profile(ndb.Model):
     notify_message_posted = ndb.BooleanProperty()
     notify_birthday_reminders = ndb.BooleanProperty()
 
-    @property
+    @cached_property
     def member(self):
         if self.member_key:
             return self.member_key.get()
@@ -94,7 +95,7 @@ class Profile(ndb.Model):
             log.warning('Hmm, there appears to be an un-owned profile: id=%s' % self.key.id())
             return Member.query(Member.profile_key == self.key).get()
 
-    @property
+    @cached_property
     def photo_url(self):
         if self.photo_key:
             try:

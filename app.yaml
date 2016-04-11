@@ -8,6 +8,7 @@ version: 1
 runtime: python27
 api_version: 1
 threadsafe: yes
+module: default
 
 # Handlers tell app engine how to route requests to your application.
 handlers:
