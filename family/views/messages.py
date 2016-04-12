@@ -71,15 +71,34 @@ def message_new():
     return redirect(url_for('messages'))
 
 
-@app.route('/message/<message_id>', methods=['POST'])
+@app.route('/message/edit/<message_id>', methods=['POST'])
+@requires_login
+def message_edit(message_id):
+    form = MessageForm(request.form)
+    if form.validate():
+        ancestor_key = ndb.Key('MessageBoard', 'main')
+        message = Message.get_by_id(int(message_id), parent=ancestor_key)
+        if not message:
+            flash('Cannot edit. Message not found', 'danger')
+        elif message.owner != g.member:
+            flash('You may only edit your own message', 'danger')
+        else:
+            flash('Message successfully updated!', 'info')
+            message.body = form.data['body']
+            message.put()
+        return redirect(url_for('messages'))
+
+
+@app.route('/message/delete/<message_id>', methods=['POST'])
 @requires_login
 def message_delete(message_id):
-    ancestor_key = ndb.Key('MessageBoard', 'main')
-    message = Message.get_by_id(int(message_id), parent=ancestor_key)
-    if not message:
-        flash('Message not found', 'danger')
-    elif message.owner != g.member:
-        flash('You may only delete your own message', 'danger')
-    else:
-        message.key.delete()
-    return redirect(url_for('messages'))
+    if request.form.get('_method', '').lower() == 'delete':
+        ancestor_key = ndb.Key('MessageBoard', 'main')
+        message = Message.get_by_id(int(message_id), parent=ancestor_key)
+        if not message:
+            flash('Message not found', 'danger')
+        elif message.owner != g.member:
+            flash('You may only delete your own message', 'danger')
+        else:
+            message.key.delete()
+        return redirect(url_for('messages'))

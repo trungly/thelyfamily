@@ -21,11 +21,13 @@
                         <img src="{{ image_source }}" title="{{ message.owner.first_name }}"
                              class="img-circle center-block" height="60" width="60">
                     </div>
-                    <div class="col-md-10 column">
+                    <div class="message-body col-md-10 column">
                         <div><strong>{{ message.owner.first_name or message.owner.profile.primary_email or 'Someone' }} said this <em>{{ message.humanized_posted_date }}</em>:</strong></div>
                         <div>{{ message.body_formatted|safe }}</div>
                         <div class="pull-right invisible">
-                            <form method="post" action="/message/{{ message.key.id() }}">
+                            <form method="post" action="/message/delete/{{ message.key.id() }}">
+                                <a class="edit btn btn-link" data-message="{{ message.body }}" data-id="{{ message.key.id() }}">Edit</a>
+                                <input type="hidden" name="_method" value="delete" />
                                 <button type="submit" class="btn btn-link">Delete</button>
                             </form>
                         </div>
@@ -42,10 +44,10 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <span class="glyphicon glyphicon-comment"></span>
-                        Post a message
+                        Post or edit a message
                     </div>
                     <div class="panel-body">
-                        <form class="form-horizontal" method="post" action="/message/new" role="form">
+                        <form id="message-form" class="form-horizontal" method="post" action="/message/new" role="form">
                             {{ form.hidden_tag() }}
                             <textarea class="form-control" name="body" rows="4"></textarea>
                             <span>You can format your text with <a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Here-Cheatsheet" target="_blank">Markdown</a></span>
@@ -88,6 +90,17 @@
             });
         });
 
+        $(".edit.btn").click(function() {
+            // clear and highlight selected message so that it's clear which is being edited
+            $("div#messages .message-body").css("background-color", "");
+            $(this).parent().parent().parent().css("background-color", "#CCF8CC");
+
+            var message = $(this).data("message");
+            var form = $("#message-form");
+            form.find("textarea").val(message);
+            form.attr("action", "/message/edit/" + $(this).data("id"));
+            form.find("textarea").css("background-color", "#DCF8DC");
+        });
     });
 </script>
 {% endblock javascript %}
