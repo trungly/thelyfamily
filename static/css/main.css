@@ -128,3 +128,8 @@ html {
 .active-list-items .new-item {
     margin-top: 10px;
 }
+
+#message-form .cancel.btn {
+    display: none;
+    margin-right: 6px;
+}

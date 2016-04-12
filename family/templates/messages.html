@@ -52,6 +52,7 @@
                             <textarea class="form-control" name="body" rows="4"></textarea>
                             <span>You can format your text with <a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Here-Cheatsheet" target="_blank">Markdown</a></span>
                             <button type="submit" class="btn btn-primary btn-padding pull-right">Submit</button>
+                            <button class="cancel btn btn-default btn-padding pull-right">Cancel</button>
                         </form>
                     </div>
                 </div>
@@ -90,16 +91,31 @@
             });
         });
 
+        // when user clicks Edit for one of the messages
         $(".edit.btn").click(function() {
             // clear and highlight selected message so that it's clear which is being edited
             $("div#messages .message-body").css("background-color", "");
             $(this).parent().parent().parent().css("background-color", "#CCF8CC");
+
+            $(".cancel.btn").show();
 
             var message = $(this).data("message");
             var form = $("#message-form");
             form.find("textarea").val(message);
             form.attr("action", "/message/edit/" + $(this).data("id"));
             form.find("textarea").css("background-color", "#DCF8DC");
+        });
+
+        // after user clicks on Edit and then hits Cancel on the form
+        $(".cancel.btn").click(function (event) {
+            event.preventDefault();
+            $(".cancel.btn").hide();
+            $("div#messages .message-body").css("background-color", "");
+
+            var form = $("#message-form");
+            form.find("textarea").val("");
+            form.attr("action", "/message/new");
+            form.find("textarea").css("background-color", "");
         });
     });
 </script>
