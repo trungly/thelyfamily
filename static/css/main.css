@@ -130,6 +130,15 @@ html {
 }
 
 #message-form .cancel.btn {
-    display: none;
     margin-right: 6px;
+}
+
+.post-message-modal {
+    position: absolute;
+    background-color: white;
+    top: 80px;
+}
+
+.modal-shade {
+    opacity: 0.1;
 }

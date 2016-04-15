@@ -6,7 +6,7 @@
             <small>Say something</small>
         </h2>
     </div>
-
+    <div class="visible-xs"><a href="javascript:void(0)" class="post-message-link">POST A MESSAGE!</a></div>
     <div class="container">
         <div class="row clearfix">
             <div class="col-md-7 column" id="messages">
@@ -36,7 +36,7 @@
                 <hr/>
                 {% endfor %}
             </div>
-            <div class="col-md-5 column">
+            <div class="col-md-5 column modal-in-mobile">
                 <div class="alert alert-info">
                     <input type="checkbox" id="notify_message_posted" name="notify_message_posted"{% if notify_message_posted %} checked{% endif %}/>
                     <label for="notify_message_posted">&nbsp;Email me when someone posts a message</label>
@@ -50,7 +50,7 @@
                         <form id="message-form" class="form-horizontal" method="post" action="/message/new" role="form">
                             {{ form.hidden_tag() }}
                             <textarea class="form-control" name="body" rows="4"></textarea>
-                            <span>You can format your text with <a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Here-Cheatsheet" target="_blank">Markdown</a></span>
+                            <span class="hidden-xs">You can format your text with <a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Here-Cheatsheet" target="_blank">Markdown</a></span>
                             <button type="submit" class="btn btn-primary btn-padding pull-right">Submit</button>
                             <button class="cancel btn btn-default btn-padding pull-right">Cancel</button>
                         </form>
@@ -59,7 +59,6 @@
             </div>
         </div>
     </div>
-
 {% endblock body %}
 
 
@@ -97,8 +96,6 @@
             $("div#messages .message-body").css("background-color", "");
             $(this).parent().parent().parent().css("background-color", "#CCF8CC");
 
-            $(".cancel.btn").show();
-
             var message = $(this).data("message");
             var form = $("#message-form");
             form.find("textarea").val(message);
@@ -109,14 +106,22 @@
         // after user clicks on Edit and then hits Cancel on the form
         $(".cancel.btn").click(function (event) {
             event.preventDefault();
-            $(".cancel.btn").hide();
             $("div#messages .message-body").css("background-color", "");
 
             var form = $("#message-form");
             form.find("textarea").val("");
             form.attr("action", "/message/new");
             form.find("textarea").css("background-color", "");
+
+            $(".modal-in-mobile").removeClass("post-message-modal");
+            $("#messages").removeClass("modal-shade");
         });
+
+        // in mobile, show a modal when this link is clicked
+        $(".post-message-link").click(function () {
+            $(".modal-in-mobile").addClass("post-message-modal");
+            $("#messages").addClass("modal-shade");
+        })
     });
 </script>
 {% endblock javascript %}
