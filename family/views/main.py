@@ -1,4 +1,6 @@
-from datetime import date
+import pytz
+
+from datetime import datetime
 from flask import render_template, request, redirect, url_for
 from family.decorators import requires_login
 from family.models.member import Member, Profile
@@ -29,7 +31,7 @@ def get_birthday_reminders():
     reminders = {}
     profiles = Profile.query()
     for profile in profiles:
-        today = date.today()
+        today = datetime.now(pytz.timezone('US/Eastern')).date()  # TODO: let users set their timezone in member profile
         bday = profile.birth_date
         if bday:
             delta = bday.timetuple().tm_yday - today.timetuple().tm_yday
