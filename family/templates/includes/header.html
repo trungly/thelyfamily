@@ -30,6 +30,9 @@
                 <li{% if request.endpoint == 'wishlists' %} class="active"{% endif %}>
                     <a href="{{ url_for('wishlists') }}">Wish Lists</a>
                 </li>
+                <li{% if request.endpoint == 'calendar' %} class="active"{% endif %}>
+                    <a href="{{ url_for('calendar') }}">Calendar</a>
+                </li>
 
                 {% if g.member %}
                     <li class="dropdown pull-right">
