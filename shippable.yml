@@ -13,8 +13,8 @@ before_install:
   - >
     test -e $GAE_DIR ||
     (mkdir -p $GAE_DIR &&
-     wget https://storage.googleapis.com/appengine-sdks/featured/google_appengine_1.9.6.zip -q -O /tmp/gae.zip &&
-     unzip /tmp/gae.zip -d $GAE_DIR)
+     wget https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-169.0.0-linux-x86_64.tar.gz -q -O /tmp/.tar.gz &&
+     tar zxf /tmp/gae.tar.gz -C $GAE_DIR)
 
 install:
   - pip install -r requirements.txt
