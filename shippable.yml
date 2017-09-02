@@ -13,7 +13,7 @@ before_install:
   - >
     test -e $GAE_DIR ||
     (mkdir -p $GAE_DIR &&
-     wget https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-169.0.0-linux-x86_64.tar.gz -q -O /tmp/.tar.gz &&
+     wget https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-169.0.0-linux-x86_64.tar.gz -q -O /tmp/gae.tar.gz &&
      tar zxf /tmp/gae.tar.gz -C $GAE_DIR)
 
 install:
