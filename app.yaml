@@ -3,12 +3,9 @@
 # https://developers.google.com/appengine/docs/python/config/appconfig
 # for details.
 
-application: your-app-id
-version: 1
 runtime: python27
 api_version: 1
 threadsafe: yes
-module: default
 
 # Handlers tell app engine how to route requests to your application.
 handlers:
@@ -51,6 +48,9 @@ inbound_services:
 - xmpp_presence
 - xmpp_subscribe
 - xmpp_error
+
+basic_scaling:
+  max_instances: 11
 
 # Third party libraries that are included in the App Engine SDK must be listed
 # here if you want to use them.  See
