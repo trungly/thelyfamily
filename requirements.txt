@@ -1,7 +1,7 @@
 # This requirements file lists all dependencies for this project.
 # Run 'pip install -r requirements.txt -t server/lib' to install these dependencies
 # in this project's server/lib directory.
-Flask==0.10.1
+Flask==1.0
 Flask-WTF==0.10.3
 requests==2.1.0
 markdown2==2.2.1
