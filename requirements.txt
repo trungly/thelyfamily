@@ -4,5 +4,5 @@
 Flask==1.0
 Flask-WTF==0.10.3
 requests==2.20.0
-markdown2==2.3.8
+markdown2==2.4.0
 pytz==2016.4
