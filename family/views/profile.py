@@ -6,7 +6,7 @@ from family.forms import ChangePasswordForm, MemberProfileForm
 from family import app
 
 
-@app.route('/profile', methods=['GET'])
+@app.route("/profile", methods=["GET"])
 @requires_login
 def profile():
     form = MemberProfileForm(request.form, g.member.profile)
@@ -17,32 +17,33 @@ def _render_profile(form):
     form.member_id.data = g.member.key.id()
     form.first_name.data = g.member.first_name
     form.last_name.data = g.member.last_name
-    photo_upload_url = blobstore.create_upload_url(url_for('profile_photo'))
+    photo_upload_url = blobstore.create_upload_url(url_for("profile_photo"))
     profile_photo_url = g.member.profile.photo_url
-    instagram_auth_url = 'https://instagram.com/oauth/authorize/?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code'
+    instagram_auth_url = "https://instagram.com/oauth/authorize/?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code"
     instagram_auth_url = instagram_auth_url.format(
-        client_id=current_app.settings.get('instagram.client.id'),
-        redirect_uri='http://%s/photos/return' % current_app.settings.get('host.name'),
+        client_id=current_app.settings.get("instagram.client.id"),
+        redirect_uri="https://%s/photos/return" % current_app.settings.get("host.name"),
     )
-    facebook_auth_url = 'https://www.facebook.com/dialog/oauth?client_id={app_id}&redirect_uri={redirect_uri}&scope={scope}'
+    facebook_auth_url = "https://www.facebook.com/dialog/oauth?client_id={app_id}&redirect_uri={redirect_uri}&scope={scope}"
     facebook_auth_url = facebook_auth_url.format(
-        app_id=current_app.settings.get('facebook.app.id'),
-        redirect_uri='http://%s/facebook/return' % current_app.settings.get('host.name'),
-        scope='user_photos'
+        app_id=current_app.settings.get("facebook.app.id"),
+        redirect_uri="https://%s/facebook/return"
+        % current_app.settings.get("host.name"),
+        scope="user_photos",
     )
 
     context = {
-        'form': form,
-        'password_form': ChangePasswordForm(),
-        'photo_upload_url': photo_upload_url,
-        'profile_photo_url': profile_photo_url,
-        'instagram_auth_url': instagram_auth_url,
-        'facebook_auth_url': facebook_auth_url,
+        "form": form,
+        "password_form": ChangePasswordForm(),
+        "photo_upload_url": photo_upload_url,
+        "profile_photo_url": profile_photo_url,
+        "instagram_auth_url": instagram_auth_url,
+        "facebook_auth_url": facebook_auth_url,
     }
-    return render_template('profile.html', **context)
+    return render_template("profile.html", **context)
 
 
-@app.route('/profile', methods=['POST'])
+@app.route("/profile", methods=["POST"])
 @requires_login
 def profile_update():
     form = MemberProfileForm(request.form)
@@ -72,16 +73,16 @@ def profile_update():
 
     profile.put()
     g.member.put()
-    flash('Profile updated', 'success')
+    flash("Profile updated", "success")
 
-    return redirect(url_for('profile'))
+    return redirect(url_for("profile"))
 
 
-@app.route('/profile/notifications/update', methods=['POST'])
+@app.route("/profile/notifications/update", methods=["POST"])
 @requires_login
 def update_notifications():
     if not request.is_xhr:
         return BadRequest()
 
     g.member.profile.update_notifications(request.form)
-    return '', 200
+    return "", 200

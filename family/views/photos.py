@@ -75,7 +75,7 @@ def instagram_return():
             'client_id': client_id,
             'client_secret': client_secret,
             'grant_type': 'authorization_code',
-            'redirect_uri': 'http://%s/photos/return' % current_app.settings.get('host.name'),
+            'redirect_uri': 'https://%s/photos/return' % current_app.settings.get('host.name'),
             'code': code,
         }
         response = requests.post(url, data=payload)
